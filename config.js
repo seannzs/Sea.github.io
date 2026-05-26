@@ -24,13 +24,13 @@ const CONFIG = {
 
   // ── Lokasi yang Sudah Dicek ─────────────────
   lokasiDicek: [
-    { nama: "WhatsApp",   icon: "💬", status: "Nggak ada" },
+    { nama: "WhatsApp",   icon: "💬", status: "Nggak aktif" },
     { nama: "Instagram",  icon: "📸", status: "Nggak aktif" },
     { nama: "TikTok",     icon: "🎵", status: "Sepi banget" },
     { nama: "Twitter/X",  icon: "🐦", status: "Nggak ketemu" },
-    { nama: "Snapchat",   icon: "👻", status: "Nggak ada" },
-    { nama: "Di kamar",   icon: "🛋️", status: "Kosong..." },
-    { nama: "Dapur",      icon: "🍳", status: "Sepi" },
+    { nama: "Discord",   icon: "🌸", status: "Nggak ada" },
+    { nama: "Di Echo",   icon: "🛋️", status: "Nggak ada" },
+    { nama: "Handphone",      icon: "📱", status: "Nggak online" },
     { nama: "Hati Aku",   icon: "💖", status: "Ada di sini ♾️" },
   ],
 

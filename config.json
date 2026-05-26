@@ -1,0 +1,69 @@
+{
+  "app": {
+    "title": "Galactic Love",
+    "subtitle": "A universe made for you",
+    "version": "1.0.0"
+  },
+  "theme": {
+    "primary": "#E91E8C",
+    "secondary": "#C2185B",
+    "accent": "#FF6BB5",
+    "glow": "#FF4DB8",
+    "deep": "#0D0019",
+    "nebula1": "#1A0533",
+    "nebula2": "#0A0120",
+    "star": "#FFD6EC",
+    "text": "#FFE4F3",
+    "muted": "#C084A0"
+  },
+  "gestures": {
+    "open_hand": {
+      "emoji": "🖐️",
+      "label": "Open Hand",
+      "action": "random",
+      "description": "Random photos appear across the galaxy",
+      "fingerThreshold": 4
+    },
+    "snap": {
+      "emoji": "🫰",
+      "label": "Finger Snap",
+      "action": "text",
+      "description": "Photos form 'I Love You' letters",
+      "fingerThreshold": 2
+    },
+    "fist": {
+      "emoji": "✊",
+      "label": "Fist",
+      "action": "heart",
+      "description": "Photos arrange into a heart shape",
+      "fingerThreshold": 0
+    }
+  },
+  "photos": [
+    { "id": 1, "src": "photos/photo1.jpg", "alt": "Memory 1" },
+    { "id": 2, "src": "photos/photo2.jpg", "alt": "Memory 2" },
+    { "id": 3, "src": "photos/photo3.jpg", "alt": "Memory 3" },
+    { "id": 4, "src": "photos/photo4.jpg", "alt": "Memory 4" },
+    { "id": 5, "src": "photos/photo5.jpg", "alt": "Memory 5" },
+    { "id": 6, "src": "photos/photo6.jpg", "alt": "Memory 6" },
+    { "id": 7, "src": "photos/photo7.jpg", "alt": "Memory 7" },
+    { "id": 8, "src": "photos/photo8.jpg", "alt": "Memory 8" },
+    { "id": 9, "src": "photos/photo9.jpg", "alt": "Memory 9" },
+    { "id": 10, "src": "photos/photo10.jpg", "alt": "Memory 10" },
+    { "id": 11, "src": "photos/photo11.jpg", "alt": "Memory 11" },
+    { "id": 12, "src": "photos/photo12.jpg", "alt": "Memory 12" }
+  ],
+  "animation": {
+    "introZoomDuration": 3000,
+    "starCount": 200,
+    "nebulaParticles": 80,
+    "photoTransitionMs": 600,
+    "gestureHoldMs": 800
+  },
+  "handDetection": {
+    "modelComplexity": 1,
+    "minDetectionConfidence": 0.7,
+    "minTrackingConfidence": 0.5,
+    "maxNumHands": 1
+  }
+}

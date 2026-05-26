@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Galactic Love ✦</title>
+  <meta name="description" content="A universe of memories — interactive hand gesture photo gallery" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Josefin+Sans:wght@100;200;300&family=Sacramento&display=swap" rel="stylesheet" />
+
+  <!-- MediaPipe Hands -->
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ── CUSTOM CURSOR ── -->
+  <div id="cursor"></div>
+  <div id="cursor-ring"></div>
+
+  <!-- ── GALAXY CANVAS ── -->
+  <canvas id="galaxy-canvas"></canvas>
+
+  <!-- ── NEBULA LAYERS ── -->
+  <div class="nebula-layer"></div>
+
+  <!-- ═══════════════════════════════
+       INTRO ZOOM ANIMATION
+  ════════════════════════════════ -->
+  <div id="intro-overlay" aria-hidden="true">
+    <div id="intro-galaxy-zoom"></div>
+    <div class="intro-star-burst"></div>
+
+    <div id="intro-title">
+      <h1>Galactic Love</h1>
+      <p>A universe made just for you</p>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════
+       MAIN APP
+  ════════════════════════════════ -->
+  <div id="app">
+
+    <!-- ── HEADER ── -->
+    <header id="header">
+      <div class="header-brand">Galactic Love</div>
+      <div class="header-status">
+        <div class="status-dot" title="Detection status"></div>
+        <span>initializing</span>
+      </div>
+    </header>
+
+    <!-- ── MAIN STAGE ── -->
+    <main id="stage">
+
+      <!-- Photo layer -->
+      <div id="photo-stage"></div>
+
+      <!-- Idle state -->
+      <div id="idle-message">
+        <div class="idle-orb">🌌</div>
+        <div class="idle-text">
+          <h2>Show me your hand</h2>
+          <p>Gesture to reveal the stars</p>
+        </div>
+        <div class="gesture-hints">
+          <div class="gesture-hint">
+            <span class="emoji">🖐️</span>
+            <span class="label">Random</span>
+          </div>
+          <div class="gesture-hint">
+            <span class="emoji">🫰</span>
+            <span class="label">I Love You</span>
+          </div>
+          <div class="gesture-hint">
+            <span class="emoji">✊</span>
+            <span class="label">Heart</span>
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- ── FOOTER ── -->
+    <footer id="footer">
+      <div class="footer-left">
+        <button class="btn btn-primary" id="btn-upload">Upload Photos</button>
+        <button class="btn" id="btn-camera">Hide Cam</button>
+      </div>
+      <div class="footer-right">✦ &nbsp; Galactic Love &nbsp; ✦</div>
+    </footer>
+
+  </div><!-- /#app -->
+
+  <!-- ── GESTURE INDICATOR ── -->
+  <div id="gesture-indicator" aria-live="polite">
+    <span class="g-emoji">🖐️</span>
+    <div class="g-dot"></div>
+    <span class="g-label">Open Hand</span>
+  </div>
+
+  <!-- ── CAMERA SECTION ── -->
+  <div id="camera-section">
+    <div class="cam-label">
+      <span id="cam-status-dot" class="status-dot"></span>
+      <span>Camera</span>
+    </div>
+    <div id="video-wrapper">
+      <video id="webcam" playsinline muted autoplay></video>
+      <canvas id="hand-canvas"></canvas>
+    </div>
+  </div>
+
+  <!-- ── KEYBOARD FALLBACK BUTTONS ── -->
+  <div id="keyboard-controls" title="Click or press 1/2/3">
+    <button class="kbd-btn" id="kbd-random" title="🖐️ Random (key: 1)">🖐️</button>
+    <button class="kbd-btn" id="kbd-text"   title="🫰 I Love You (key: 2)">🫰</button>
+    <button class="kbd-btn" id="kbd-heart"  title="✊ Heart (key: 3)">✊</button>
+  </div>
+
+  <!-- ── UPLOAD MODAL ── -->
+  <div id="upload-modal" role="dialog" aria-modal="true" aria-label="Upload your photos">
+    <div class="modal-box">
+      <h2>Your memories</h2>
+      <p>Upload photos to fill the galaxy with your moments</p>
+
+      <div class="upload-zone" id="upload-zone" role="button" tabindex="0"
+           aria-label="Click or drag to upload photos">
+        <div class="upload-icon">✦</div>
+        <p>Click or drag your photos here</p>
+        <input type="file" id="file-input" accept="image/*" multiple />
+      </div>
+
+      <div class="preview-grid" id="preview-grid"></div>
+
+      <div class="modal-actions">
+        <button class="btn" id="btn-modal-close">Cancel</button>
+        <button class="btn btn-primary" id="btn-modal-save">Save to Galaxy</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TOAST ── -->
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <!-- ── SCRIPTS ── -->
+  <script src="javascript.js"></script>
+
+</body>
+</html>

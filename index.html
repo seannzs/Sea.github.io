@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>🔍 Nyariin Kamu...</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔍</text></svg>" />
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Pacifico&display=swap" rel="stylesheet" />
+<script src="config.js"></script>
+
+<style>
+  /* ── Reset & Base ── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --pink:       #FF6B9D;
+    --pink-light: #FFB3CC;
+    --pink-pale:  #FFE4EE;
+    --pink-deep:  #FF3D7F;
+    --yellow:     #FFD93D;
+    --purple:     #C77DFF;
+    --white:      #FFFFFF;
+    --text:       #6B3A5A;
+    --text-light: #C490A8;
+    --shadow:     rgba(255,107,157,0.3);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--pink-pale);
+    min-height: 100vh;
+    overflow-x: hidden;
+    cursor: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><text y='24' font-size='24'>🌸</text></svg>") 16 16, auto;
+    position: relative;
+  }
+
+  /* ── Background Mesh ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(circle at 15% 20%, rgba(255,107,157,0.18) 0%, transparent 50%),
+      radial-gradient(circle at 85% 10%, rgba(199,125,255,0.15) 0%, transparent 45%),
+      radial-gradient(circle at 50% 80%, rgba(255,179,204,0.20) 0%, transparent 55%),
+      radial-gradient(circle at 80% 60%, rgba(255,217,61,0.10) 0%, transparent 40%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── Floating Particles Canvas ── */
+  #particles { position: fixed; inset: 0; pointer-events: none; z-index: 1; }
+
+  /* ── Main Wrapper ── */
+  .wrapper {
+    position: relative; z-index: 2;
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center;
+    padding: 30px 20px 60px;
+  }
+
+  /* ── Header ── */
+  .header {
+    text-align: center;
+    margin-bottom: 36px;
+    animation: dropIn 0.7s cubic-bezier(0.34,1.56,0.64,1) both;
+  }
+
+  .header .title-big {
+    font-family: 'Pacifico', cursive;
+    font-size: clamp(2rem, 6vw, 3.4rem);
+    color: var(--pink-deep);
+    text-shadow: 3px 4px 0 var(--pink-light), 0 0 30px rgba(255,61,127,0.25);
+    line-height: 1.15;
+    letter-spacing: -0.5px;
+  }
+
+  .header .subtitle {
+    font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+    color: var(--text-light);
+    font-weight: 700;
+    margin-top: 8px;
+    letter-spacing: 0.5px;
+  }
+
+  /* ── Search Bar ── */
+  .search-section {
+    width: 100%; max-width: 560px;
+    margin-bottom: 30px;
+    animation: dropIn 0.7s 0.15s cubic-bezier(0.34,1.56,0.64,1) both;
+  }
+
+  .search-box {
+    display: flex; align-items: center;
+    background: var(--white);
+    border: 3px solid var(--pink-light);
+    border-radius: 60px;
+    padding: 14px 22px;
+    box-shadow: 0 8px 30px var(--shadow), 0 2px 8px rgba(0,0,0,0.05);
+    transition: border-color 0.3s, box-shadow 0.3s;
+    position: relative; overflow: hidden;
+  }
+
+  .search-box::after {
+    content: '';
+    position: absolute; left: -100%; top: 0; bottom: 0; width: 60%;
+    background: linear-gradient(90deg, transparent, rgba(255,179,204,0.25), transparent);
+    animation: searchShine 2s 1s infinite;
+  }
+
+  .search-box:focus-within {
+    border-color: var(--pink);
+    box-shadow: 0 8px 30px var(--shadow), 0 0 0 4px rgba(255,107,157,0.15);
+  }
+
+  .search-icon { font-size: 1.5rem; margin-right: 12px; animation: wiggle 1.5s infinite; flex-shrink: 0; }
+
+  .search-input {
+    flex: 1; border: none; outline: none;
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.05rem; font-weight: 700;
+    color: var(--text);
+    background: transparent;
+    min-width: 0;
+  }
+
+  .search-input::placeholder { color: var(--pink-light); }
+
+  .search-btn {
+    background: linear-gradient(135deg, var(--pink), var(--pink-deep));
+    border: none; border-radius: 40px;
+    padding: 10px 22px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.95rem; font-weight: 800;
+    color: white; cursor: pointer;
+    box-shadow: 0 4px 15px rgba(255,61,127,0.35);
+    transition: transform 0.2s, box-shadow 0.2s;
+    white-space: nowrap; flex-shrink: 0;
+  }
+
+  .search-btn:hover { transform: scale(1.07); box-shadow: 0 6px 20px rgba(255,61,127,0.45); }
+  .search-btn:active { transform: scale(0.97); }
+
+  .search-tags {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    margin-top: 12px; justify-content: center;
+  }
+
+  .tag {
+    background: white; border: 2px solid var(--pink-light);
+    border-radius: 20px; padding: 5px 14px;
+    font-size: 0.8rem; font-weight: 700;
+    color: var(--pink); cursor: default;
+    animation: popIn 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
+  }
+
+  /* ── Main Card ── */
+  .main-card {
+    width: 100%; max-width: 560px;
+    background: white;
+    border-radius: 28px;
+    padding: 32px 28px;
+    box-shadow: 0 16px 50px var(--shadow), 0 4px 12px rgba(0,0,0,0.06);
+    border: 2.5px solid var(--pink-pale);
+    margin-bottom: 24px;
+    animation: dropIn 0.7s 0.28s cubic-bezier(0.34,1.56,0.64,1) both;
+    position: relative; overflow: hidden;
+  }
+
+  .main-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 5px;
+    background: linear-gradient(90deg, var(--pink), var(--purple), var(--yellow), var(--pink));
+    background-size: 200% 100%;
+    animation: rainbowSlide 3s linear infinite;
+  }
+
+  .card-emoji-row {
+    display: flex; justify-content: center; gap: 10px;
+    font-size: 2rem; margin-bottom: 18px;
+  }
+
+  .card-emoji-row span { display: inline-block; animation: floatBob 2s ease-in-out infinite; }
+  .card-emoji-row span:nth-child(2) { animation-delay: 0.3s; }
+  .card-emoji-row span:nth-child(3) { animation-delay: 0.6s; }
+  .card-emoji-row span:nth-child(4) { animation-delay: 0.9s; }
+
+  .card-title {
+    font-family: 'Pacifico', cursive;
+    font-size: 1.5rem; color: var(--pink-deep);
+    text-align: center; margin-bottom: 8px;
+  }
+
+  .card-msg {
+    text-align: center; color: var(--text);
+    font-size: 1rem; font-weight: 600;
+    line-height: 1.6;
+    background: var(--pink-pale);
+    border-radius: 16px; padding: 14px 18px;
+    margin-bottom: 20px;
+    border-left: 4px solid var(--pink);
+    position: relative;
+  }
+
+  /* Typing dots */
+  .card-msg.typing::after {
+    content: ' ●●●';
+    color: var(--pink-light);
+    animation: blink 1s infinite;
+  }
+
+  /* ── Location Grid ── */
+  .location-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+  }
+
+  .loc-item {
+    display: flex; align-items: center; gap: 12px;
+    background: var(--pink-pale);
+    border-radius: 16px; padding: 12px 16px;
+    border: 2px solid transparent;
+    transition: all 0.3s;
+    animation: popIn 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
+    cursor: default;
+  }
+
+  .loc-item:hover {
+    border-color: var(--pink-light);
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 8px 20px var(--shadow);
+  }
+
+  .loc-icon { font-size: 1.6rem; flex-shrink: 0; }
+  .loc-info { min-width: 0; }
+  .loc-name { font-weight: 800; color: var(--text); font-size: 0.9rem; }
+  .loc-status {
+    font-size: 0.78rem; font-weight: 700;
+    color: var(--pink); margin-top: 2px;
+    display: flex; align-items: center; gap: 4px;
+  }
+
+  .loc-status.found { color: #4CAF50; }
+  .loc-status::before {
+    content: '';
+    display: inline-block; width: 6px; height: 6px;
+    border-radius: 50%; background: currentColor;
+    flex-shrink: 0;
+    animation: pulse-dot 1.2s infinite;
+  }
+
+  /* ── Pesan Berganti ── */
+  .rotating-msg {
+    width: 100%; max-width: 560px;
+    background: linear-gradient(135deg, var(--pink), var(--pink-deep));
+    border-radius: 20px; padding: 18px 22px;
+    color: white; text-align: center;
+    font-weight: 700; font-size: 1rem;
+    line-height: 1.5;
+    box-shadow: 0 8px 25px var(--shadow);
+    animation: dropIn 0.7s 0.42s cubic-bezier(0.34,1.56,0.64,1) both;
+    margin-bottom: 24px;
+    position: relative; overflow: hidden;
+  }
+
+  .rotating-msg::before {
+    content: '💭';
+    position: absolute; top: -8px; left: 18px;
+    font-size: 2rem;
+  }
+
+  .rotating-msg .msg-text {
+    transition: opacity 0.5s, transform 0.5s;
+    padding-top: 4px;
+  }
+
+  .rotating-msg .msg-text.hidden {
+    opacity: 0; transform: translateY(8px);
+  }
+
+  /* ── Loading Bar ── */
+  .loading-section {
+    width: 100%; max-width: 560px;
+    background: white; border-radius: 20px;
+    padding: 22px 24px;
+    box-shadow: 0 8px 25px var(--shadow);
+    border: 2.5px solid var(--pink-pale);
+    animation: dropIn 0.7s 0.55s cubic-bezier(0.34,1.56,0.64,1) both;
+    margin-bottom: 24px;
+  }
+
+  .loading-label {
+    font-weight: 800; color: var(--text);
+    font-size: 0.9rem; margin-bottom: 10px;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .loading-bar-track {
+    background: var(--pink-pale);
+    border-radius: 99px; height: 14px;
+    overflow: hidden; margin-bottom: 8px;
+  }
+
+  .loading-bar-fill {
+    height: 100%; border-radius: 99px;
+    background: linear-gradient(90deg, var(--pink-light), var(--pink), var(--pink-deep));
+    background-size: 200% 100%;
+    animation: loadFill 4s ease-in-out infinite alternate, rainbowSlide 2s linear infinite;
+    position: relative;
+  }
+
+  .loading-bar-fill::after {
+    content: ''; position: absolute; right: 0; top: 0; bottom: 0;
+    width: 30px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5));
+    border-radius: 99px;
+  }
+
+  .loading-pct {
+    text-align: right; font-size: 0.78rem; font-weight: 800;
+    color: var(--pink-deep);
+  }
+
+  /* ── Footer Note ── */
+  .footer-note {
+    text-align: center; color: var(--text-light);
+    font-size: 0.85rem; font-weight: 700;
+    animation: dropIn 0.7s 0.68s both;
+    padding-bottom: 20px;
+  }
+
+  .footer-note .hearts { font-size: 1.1rem; animation: floatBob 1.5s ease-in-out infinite; display: inline-block; }
+
+  /* ── Floating Hearts (canvas) ── */
+  .floating-heart {
+    position: fixed; pointer-events: none;
+    font-size: 1.5rem; z-index: 1;
+    animation: floatUp var(--dur) var(--delay) ease-in infinite;
+    left: var(--x); bottom: -60px;
+    opacity: 0;
+  }
+
+  /* ── Keyframes ── */
+  @keyframes dropIn {
+    from { opacity: 0; transform: translateY(-28px) scale(0.92); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  @keyframes popIn {
+    from { opacity: 0; transform: scale(0.6); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+
+  @keyframes wiggle {
+    0%,100% { transform: rotate(0deg); }
+    25%      { transform: rotate(-12deg); }
+    75%      { transform: rotate(12deg); }
+  }
+
+  @keyframes floatBob {
+    0%,100% { transform: translateY(0); }
+    50%      { transform: translateY(-8px); }
+  }
+
+  @keyframes floatUp {
+    0%   { opacity: 0; transform: translateY(0) scale(0.8) rotate(-10deg); }
+    10%  { opacity: 0.9; }
+    90%  { opacity: 0.6; }
+    100% { opacity: 0; transform: translateY(-100vh) scale(1.2) rotate(15deg); }
+  }
+
+  @keyframes blink {
+    0%,100% { opacity: 1; } 50% { opacity: 0.2; }
+  }
+
+  @keyframes pulse-dot {
+    0%,100% { transform: scale(1); opacity: 1; }
+    50%      { transform: scale(1.5); opacity: 0.5; }
+  }
+
+  @keyframes rainbowSlide {
+    from { background-position: 0% 0%; }
+    to   { background-position: 200% 0%; }
+  }
+
+  @keyframes loadFill {
+    from { width: 20%; }
+    to   { width: 92%; }
+  }
+
+  @keyframes searchShine {
+    from { left: -100%; }
+    to   { left: 150%; }
+  }
+
+  @keyframes starSpin {
+    from { transform: rotate(0deg) scale(1); }
+    to   { transform: rotate(360deg) scale(1.1); }
+  }
+
+  @keyframes starTwinkle {
+    0%,100% { opacity: 0.9; transform: scale(1); }
+    50%      { opacity: 0.2; transform: scale(0.5); }
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 480px) {
+    .main-card { padding: 24px 18px; }
+    .location-grid { grid-template-columns: 1fr 1fr; }
+    .search-btn { padding: 10px 14px; font-size: 0.85rem; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="particles"></canvas>
+
+<div class="wrapper">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="title-big">🔍 Nyariin Kamu</div>
+    <div class="subtitle" id="namaPacar">loading... 🌸</div>
+  </div>
+
+  <!-- Search Bar -->
+  <div class="search-section">
+    <div class="search-box">
+      <div class="search-icon">🔍</div>
+      <input class="search-input" id="searchInput" type="text" placeholder="Lagi nyari kamu..." readonly />
+      <button class="search-btn" onclick="doSearch()">Cari! 🌸</button>
+    </div>
+    <div class="search-tags" id="searchTags"></div>
+  </div>
+
+  <!-- Main Card -->
+  <div class="main-card">
+    <div class="card-emoji-row">
+      <span>🥺</span><span>💖</span><span>🌸</span><span>💕</span>
+    </div>
+    <div class="card-title" id="cardTitle">Kemana ya kamu?</div>
+    <div class="card-msg typing" id="cardMsg">...</div>
+
+    <!-- Location Grid -->
+    <div class="location-grid" id="locationGrid"></div>
+  </div>
+
+  <!-- Rotating Message -->
+  <div class="rotating-msg">
+    <div class="msg-text" id="rotatingMsg">💕 Sayang kamu...</div>
+  </div>
+
+  <!-- Loading Bar -->
+  <div class="loading-section">
+    <div class="loading-label">
+      🔭 Proses pencarian sedang berlangsung...
+      <span style="margin-left:auto; color:var(--pink-light); font-size:0.8rem;" id="searchStatus">mencari...</span>
+    </div>
+    <div class="loading-bar-track">
+      <div class="loading-bar-fill" id="loadBar"></div>
+    </div>
+    <div class="loading-pct" id="loadPct">Hasilnya belum ketemu 🥺</div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer-note">
+    Dibuat dengan banyak rasa kangen <span class="hearts">💗</span><br/>
+    <span id="footerName">— Dari aku, buat kamu 🌸</span>
+  </div>
+
+</div>
+
+<!-- Floating Hearts -->
+<div id="floatingHearts"></div>
+
+<script>
+/* ── 1. Apply Config ── */
+document.addEventListener('DOMContentLoaded', () => {
+  applyConfig();
+  buildLocationGrid();
+  buildFloatingHearts();
+  buildParticles();
+  buildSearchTags();
+  startRotatingMsg();
+  startSearchAnimation();
+  startLoadingBar();
+});
+
+function applyConfig() {
+  document.getElementById('namaPacar').textContent =
+    `Lagi nyariin ${CONFIG.namaPacar} kemana-mana... 🌸`;
+  document.getElementById('cardTitle').textContent =
+    `${CONFIG.namaPacar}, kamu dimana? 🥺`;
+  document.getElementById('cardMsg').textContent = CONFIG.pesanRindu;
+  document.getElementById('footerName').textContent =
+    `— Dari ${CONFIG.namaMu}, buat ${CONFIG.namaPacar} 🌸`;
+}
+
+/* ── 2. Location Grid ── */
+function buildLocationGrid() {
+  const grid = document.getElementById('locationGrid');
+  CONFIG.lokasiDicek.forEach((loc, i) => {
+    const el = document.createElement('div');
+    el.className = 'loc-item';
+    el.style.animationDelay = (i * 0.08) + 's';
+    const isFound = i === CONFIG.lokasiDicek.length - 1;
+    el.innerHTML = `
+      <div class="loc-icon">${loc.icon}</div>
+      <div class="loc-info">
+        <div class="loc-name">${loc.nama}</div>
+        <div class="loc-status ${isFound ? 'found' : ''}">${loc.status}</div>
+      </div>`;
+    grid.appendChild(el);
+  });
+}
+
+/* ── 3. Search Tags ── */
+function buildSearchTags() {
+  const tags = document.getElementById('searchTags');
+  const labels = [CONFIG.namaPacar, 'Pacarku 🌸', 'Yang aku kangen 💕', 'Belahan jiwa ✨', 'My person 🤍'];
+  labels.forEach((l, i) => {
+    const t = document.createElement('div');
+    t.className = 'tag';
+    t.textContent = l;
+    t.style.animationDelay = (0.6 + i * 0.08) + 's';
+    tags.appendChild(t);
+  });
+}
+
+/* ── 4. Rotating Message ── */
+let msgIdx = 0;
+function startRotatingMsg() {
+  const el = document.getElementById('rotatingMsg');
+  const msgs = CONFIG.pesanKecil;
+  setInterval(() => {
+    el.classList.add('hidden');
+    setTimeout(() => {
+      msgIdx = (msgIdx + 1) % msgs.length;
+      el.textContent = msgs[msgIdx];
+      el.classList.remove('hidden');
+    }, 500);
+  }, CONFIG.animasi.kecepatanTik);
+}
+
+/* ── 5. Search Bar Animation ── */
+const searchPhrases = [
+  `Nyariin ${CONFIG.namaPacar}...`,
+  `Di mana ya ${CONFIG.namaPacar}?`,
+  `${CONFIG.namaPacar} + ${CONFIG.namaMu} 💕`,
+  `Kangen banget sama ${CONFIG.namaPacar}...`,
+  `${CONFIG.namaPacar} please online 🥺`,
+];
+let sIdx = 0;
+function startSearchAnimation() {
+  const inp = document.getElementById('searchInput');
+  function typePhrase(phrase, i=0) {
+    if (i <= phrase.length) {
+      inp.value = phrase.slice(0, i);
+      setTimeout(() => typePhrase(phrase, i+1), 55);
+    } else {
+      setTimeout(() => erasePhrase(phrase, phrase.length), 1400);
+    }
+  }
+  function erasePhrase(phrase, i) {
+    if (i >= 0) {
+      inp.value = phrase.slice(0, i);
+      setTimeout(() => erasePhrase(phrase, i-1), 35);
+    } else {
+      sIdx = (sIdx + 1) % searchPhrases.length;
+      setTimeout(() => typePhrase(searchPhrases[sIdx]), 400);
+    }
+  }
+  typePhrase(searchPhrases[0]);
+}
+
+function doSearch() {
+  const inp = document.getElementById('searchInput');
+  inp.value = `💖 Ketemu! ${CONFIG.namaPacar} ada di hatiku...`;
+  const btn = document.querySelector('.search-btn');
+  btn.textContent = '💖 Ketemu!';
+  btn.style.background = 'linear-gradient(135deg, #4CAF50, #66BB6A)';
+  setTimeout(() => {
+    btn.textContent = 'Cari! 🌸';
+    btn.style.background = '';
+  }, 3000);
+}
+
+/* ── 6. Loading Bar ── */
+function startLoadingBar() {
+  const pct = document.getElementById('loadPct');
+  const status = document.getElementById('searchStatus');
+  const statuses = ['mencari...','scanning... 🔍','ngecek WA...','ngecek IG...','ngecek TikTok...','masih nyariin...','belum ketemu 😔'];
+  let s = 0;
+  setInterval(() => {
+    s = (s + 1) % statuses.length;
+    status.textContent = statuses[s];
+    const val = Math.floor(Math.random() * 30 + 60);
+    pct.textContent = `Sudah dicek ${val}% tempat — belum ketemu juga 🥺`;
+  }, 2200);
+}
+
+/* ── 7. Floating Hearts ── */
+const heartEmojis = ['💖','💗','💕','🌸','✨','💝','💓','🩷','🫶','💞'];
+function buildFloatingHearts() {
+  const container = document.getElementById('floatingHearts');
+  const count = CONFIG.animasi.jumlahHati;
+  for (let i = 0; i < count; i++) {
+    const h = document.createElement('div');
+    h.className = 'floating-heart';
+    h.textContent = heartEmojis[Math.floor(Math.random() * heartEmojis.length)];
+    const dur  = (6 + Math.random() * 8).toFixed(1) + 's';
+    const del  = (Math.random() * 12).toFixed(1) + 's';
+    const x    = (Math.random() * 96).toFixed(1) + 'vw';
+    h.style.setProperty('--dur', dur);
+    h.style.setProperty('--delay', del);
+    h.style.setProperty('--x', x);
+    h.style.fontSize = (1 + Math.random() * 1.4).toFixed(2) + 'rem';
+    container.appendChild(h);
+  }
+}
+
+/* ── 8. Canvas Particle Stars ── */
+function buildParticles() {
+  const canvas = document.getElementById('particles');
+  const ctx = canvas.getContext('2d');
+  let W, H, stars = [];
+
+  function resize() {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', () => { resize(); makeStars(); });
+
+  function makeStars() {
+    stars = [];
+    const count = CONFIG.animasi.jumlahBintang;
+    for (let i = 0; i < count; i++) {
+      stars.push({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        r: 2 + Math.random() * 4,
+        color: ['#FF6B9D','#FFB3CC','#C77DFF','#FFD93D','#FF3D7F'][Math.floor(Math.random()*5)],
+        alpha: 0.3 + Math.random() * 0.7,
+        da: (Math.random() * 0.02 + 0.005) * (Math.random() < 0.5 ? 1 : -1),
+        dx: (Math.random() - 0.5) * 0.4,
+        dy: (Math.random() - 0.5) * 0.4,
+      });
+    }
+  }
+  makeStars();
+
+  function loop() {
+    ctx.clearRect(0, 0, W, H);
+    stars.forEach(s => {
+      s.alpha += s.da;
+      if (s.alpha > 1 || s.alpha < 0.1) s.da *= -1;
+      s.x += s.dx; s.y += s.dy;
+      if (s.x < -20) s.x = W+20;
+      if (s.x > W+20) s.x = -20;
+      if (s.y < -20) s.y = H+20;
+      if (s.y > H+20) s.y = -20;
+
+      ctx.save();
+      ctx.globalAlpha = s.alpha;
+      ctx.fillStyle = s.color;
+      ctx.shadowColor = s.color;
+      ctx.shadowBlur = 10;
+
+      // draw 4-point star
+      ctx.beginPath();
+      for (let p = 0; p < 4; p++) {
+        const angle = (p / 4) * Math.PI * 2 - Math.PI/4;
+        const outer = { x: s.x + Math.cos(angle) * s.r, y: s.y + Math.sin(angle) * s.r };
+        const inner = { x: s.x + Math.cos(angle + Math.PI/4) * s.r * 0.4,
+                        y: s.y + Math.sin(angle + Math.PI/4) * s.r * 0.4 };
+        p === 0 ? ctx.moveTo(outer.x, outer.y) : ctx.lineTo(outer.x, outer.y);
+        ctx.lineTo(inner.x, inner.y);
+      }
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+    });
+    requestAnimationFrame(loop);
+  }
+  loop();
+}
+</script>
+</body>
+</html>

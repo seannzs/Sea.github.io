@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Kuis Antropologi — SMA Kelas XI Semester 2</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #F5F0E8; --surface: #FFFDF7; --ink: #1C1A16;
+      --muted: #7A7060; --accent: #C5622A; --border: #DDD5C0;
+      --correct: #3E6B52; --wrong: #B03030; --radius: 12px;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--ink); min-height: 100vh; padding: 0 0 80px; }
+
+    header {
+      background: var(--ink); color: #F5F0E8;
+      padding: 48px 24px 40px; text-align: center;
+      position: relative; overflow: hidden;
+    }
+    header::before {
+      content: ''; position: absolute; inset: 0;
+      background: repeating-linear-gradient(-45deg, transparent, transparent 18px, rgba(255,255,255,.03) 18px, rgba(255,255,255,.03) 19px);
+    }
+    header .label {
+      display: inline-block; font-size: .72rem; font-weight: 600;
+      letter-spacing: .18em; text-transform: uppercase; color: var(--accent);
+      background: rgba(197,98,42,.12); border: 1px solid rgba(197,98,42,.35);
+      padding: 4px 14px; border-radius: 99px; margin-bottom: 18px;
+    }
+    header h1 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(2rem, 5vw, 3.2rem); line-height: 1.15; position: relative;
+    }
+    header p { margin-top: 10px; color: #B0A890; font-size: .95rem; }
+
+    #progress-wrap { position: sticky; top: 0; z-index: 10; background: var(--ink); padding: 0 0 4px; }
+    #progress-bar { height: 4px; background: var(--accent); width: 0%; transition: width .4s ease; }
+
+    .container { max-width: 760px; margin: 0 auto; padding: 40px 20px 0; }
+
+    .question-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 32px 28px; margin-bottom: 20px;
+      transition: box-shadow .2s;
+    }
+    .question-card:hover { box-shadow: 0 4px 24px rgba(0,0,0,.07); }
+    .question-card.unanswered { border-color: #D4A843; box-shadow: 0 0 0 3px rgba(212,168,67,.18); }
+
+    .q-meta { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+    .q-num { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; color: var(--accent); min-width: 32px; }
+    .q-tag {
+      font-size: .72rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase;
+      color: var(--muted); background: var(--bg); border: 1px solid var(--border);
+      padding: 3px 10px; border-radius: 99px;
+    }
+    .q-text { font-size: 1rem; line-height: 1.65; font-weight: 500; margin-bottom: 20px; }
+
+    .options { display: flex; flex-direction: column; gap: 10px; }
+    .option-label {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 13px 16px; border: 1.5px solid var(--border); border-radius: 8px;
+      cursor: pointer; transition: border-color .15s, background .15s; user-select: none;
+    }
+    .option-label:hover { border-color: var(--accent); background: #FEF6EE; }
+    .option-label input[type="radio"] { display: none; }
+    .opt-letter {
+      flex-shrink: 0; width: 26px; height: 26px; border-radius: 50%;
+      background: var(--bg); border: 1.5px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: .75rem; font-weight: 700; color: var(--muted);
+      transition: background .15s, border-color .15s, color .15s; margin-top: 1px;
+    }
+    .option-label:has(input:checked) .opt-letter { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .option-label:has(input:checked) { border-color: var(--accent); background: #FEF6EE; }
+    .opt-text { font-size: .93rem; line-height: 1.5; padding-top: 2px; }
+
+    .option-label.correct { border-color: var(--correct); background: #EEF5F1; }
+    .option-label.correct .opt-letter { background: var(--correct); border-color: var(--correct); color: #fff; }
+    .option-label.wrong { border-color: var(--wrong); background: #FBF0F0; }
+    .option-label.wrong .opt-letter { background: var(--wrong); border-color: var(--wrong); color: #fff; }
+
+    #btn-wrap { text-align: center; margin-top: 36px; }
+    #submit-btn {
+      font-family: 'DM Sans', sans-serif; font-size: 1rem; font-weight: 600;
+      letter-spacing: .04em; background: var(--ink); color: #F5F0E8;
+      border: none; padding: 16px 52px; border-radius: 8px; cursor: pointer;
+      transition: background .2s, transform .1s;
+    }
+    #submit-btn:hover { background: #2E2B24; transform: translateY(-1px); }
+    #submit-btn:active { transform: translateY(0); }
+    #submit-btn:disabled { opacity: .4; cursor: not-allowed; }
+
+    #warn-msg {
+      display: none; margin-top: 12px; font-size: .87rem; color: #C07A00;
+      background: #FFF8E6; border: 1px solid #E8C96A; border-radius: 8px;
+      padding: 10px 18px; text-align: center;
+    }
+
+    #hasil {
+      display: none; margin-top: 40px; background: var(--ink); color: #F5F0E8;
+      border-radius: var(--radius); padding: 40px 32px; text-align: center;
+      animation: fadeUp .5s ease both;
+    }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+    #hasil .score-label { font-size: .78rem; letter-spacing: .16em; text-transform: uppercase; color: #B0A890; margin-bottom: 10px; }
+    #hasil .score-num { font-family: 'Playfair Display', serif; font-size: clamp(3.5rem,10vw,5.5rem); font-weight: 700; line-height: 1; color: var(--accent); }
+    #hasil .score-of { font-size: .9rem; color: #B0A890; margin-top: 6px; }
+    #hasil .predikat { display: inline-block; margin-top: 20px; font-size: 1.05rem; font-weight: 600; padding: 8px 24px; border-radius: 99px; border: 1.5px solid rgba(255,255,255,.2); }
+    #hasil .divider { width: 48px; height: 2px; background: rgba(255,255,255,.15); margin: 24px auto; }
+    #hasil .summary-row { display: flex; justify-content: center; gap: 32px; flex-wrap: wrap; margin-bottom: 28px; }
+    #hasil .stat { text-align: center; }
+    #hasil .stat .val { font-size: 1.6rem; font-weight: 700; }
+    #hasil .stat .val.g { color: #7DCCA4; }
+    #hasil .stat .val.r { color: #E07070; }
+    #hasil .stat .lbl { font-size: .78rem; color: #B0A890; margin-top: 2px; }
+    #hasil .kunci-title { font-family: 'Playfair Display', serif; font-size: 1.25rem; margin-bottom: 20px; }
+    .kunci-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; text-align: left; }
+    .kunci-item { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1); border-radius: 8px; padding: 12px 14px; font-size: .85rem; line-height: 1.5; }
+    .kunci-item .ki-no { color: var(--accent); font-weight: 700; margin-bottom: 3px; }
+    .kunci-item .ki-ans { color: #7DCCA4; font-weight: 600; }
+    .kunci-item .ki-your { color: #E07070; font-size: .8rem; }
+    .kunci-item.ok { border-color: rgba(125,204,164,.25); }
+
+    #retry-btn {
+      margin-top: 28px; font-family: 'DM Sans', sans-serif; font-size: .93rem; font-weight: 600;
+      background: transparent; color: #F5F0E8; border: 1.5px solid rgba(255,255,255,.3);
+      padding: 12px 36px; border-radius: 8px; cursor: pointer; transition: border-color .2s, background .2s;
+    }
+    #retry-btn:hover { border-color: #fff; background: rgba(255,255,255,.07); }
+
+    @media (max-width: 500px) { .question-card { padding: 22px 18px; } #hasil { padding: 32px 18px; } }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="label">SMA &middot; Kelas XI &middot; Semester 2</div>
+  <h1>Kuis Antropologi</h1>
+  <p>20 soal pilihan ganda &mdash; jawab semua lalu kirim</p>
+</header>
+
+<div id="progress-wrap"><div id="progress-bar"></div></div>
+
+<div class="container">
+  <div id="quiz-form"></div>
+  <div id="btn-wrap">
+    <button id="submit-btn">Kirim Jawaban</button>
+    <div id="warn-msg">&#9888;&#65039; Masih ada soal yang belum dijawab. Harap lengkapi semua jawaban terlebih dahulu.</div>
+  </div>
+  <div id="hasil"></div>
+</div>
+
+<script>
+const questions = [
+  {
+    topic: "Keragaman Budaya",
+    q: "Keragaman budaya di Indonesia salah satunya disebabkan oleh faktor geografis berupa kepulauan. Dampak kondisi kepulauan terhadap budaya adalah …",
+    opts: [
+      "Mempercepat penyeragaman budaya di seluruh wilayah",
+      "Menciptakan isolasi geografis sehingga tiap daerah mengembangkan budaya yang khas",
+      "Menghilangkan tradisi lokal karena sulitnya komunikasi",
+      "Mendorong masyarakat berpindah ke budaya asing"
+    ],
+    ans: 1
+  },
+  {
+    topic: "Keragaman Budaya",
+    q: "Indonesia memiliki lebih dari 700 bahasa daerah. Kondisi ini merupakan contoh keragaman dalam dimensi …",
+    opts: ["Sistem ekonomi", "Sistem religi", "Bahasa dan komunikasi", "Sistem hukum adat"],
+    ans: 2
+  },
+  {
+    topic: "Integrasi Nasional",
+    q: "Integrasi nasional dalam konteks antropologi merujuk pada proses …",
+    opts: [
+      "Penyeragaman seluruh budaya daerah menjadi satu budaya tunggal nasional",
+      "Penyatuan berbagai kelompok etnis dan budaya menjadi kesatuan bangsa tanpa menghilangkan identitas lokal",
+      "Penghapusan bahasa daerah demi penggunaan bahasa nasional semata",
+      "Pengabaian perbedaan suku demi kepentingan ekonomi"
+    ],
+    ans: 1
+  },
+  {
+    topic: "Multikulturalisme",
+    q: "Paham multikulturalisme mengakui dan menghargai …",
+    opts: [
+      "Satu kebudayaan dominan sebagai standar kehidupan bersama",
+      "Hanya kebudayaan mayoritas sebagai kebudayaan nasional",
+      "Kesetaraan dan keberadaan berbagai kebudayaan dalam satu masyarakat",
+      "Penggabungan seluruh budaya menjadi satu budaya baru yang homogen"
+    ],
+    ans: 2
+  },
+  {
+    topic: "Identitas Budaya",
+    q: "Identitas budaya suatu kelompok masyarakat terbentuk terutama dari …",
+    opts: [
+      "Keputusan pemerintah pusat tentang simbol nasional",
+      "Proses internalisasi nilai, tradisi, bahasa, dan simbol yang diwariskan secara turun-temurun",
+      "Pengaruh media sosial global semata",
+      "Tingkat kemakmuran ekonomi kelompok tersebut"
+    ],
+    ans: 1
+  },
+  {
+    topic: "Dinamika Budaya",
+    q: "Penemuan unsur budaya baru yang berasal dari dalam masyarakat itu sendiri melalui kreativitas warganya disebut …",
+    opts: ["Difusi", "Discovery", "Invention", "Akulturasi"],
+    ans: 2
+  },
+  {
+    topic: "Dinamika Budaya",
+    q: "Masuknya unsur budaya asing ke dalam suatu masyarakat secara damai dan lambat laun diterima tanpa goncangan sosial disebut …",
+    opts: [
+      "Penetrasi pasifik (penetration pacifique)",
+      "Revolusi budaya",
+      "Asimilasi paksa",
+      "Sinkretisme total"
+    ],
+    ans: 0
+  },
+  {
+    topic: "Konflik Budaya",
+    q: "Ketegangan sosial yang timbul ketika nilai-nilai dua kelompok budaya berbeda saling berbenturan disebut …",
+    opts: ["Integrasi budaya", "Akulturasi budaya", "Konflik budaya", "Sinkretisme"],
+    ans: 2
+  },
+  {
+    topic: "Sinkretisme",
+    q: "Perpaduan antara unsur Hindu dan tradisi lokal Nusantara yang menghasilkan seni pertunjukan wayang adalah contoh …",
+    opts: ["Asimilasi total", "Sinkretisme budaya", "Etnosentrisme", "Kontrabudaya"],
+    ans: 1
+  },
+  {
+    topic: "Tradisi & Modernitas",
+    q: "Masyarakat yang menerima teknologi modern namun tetap menjalankan upacara adat leluhur menunjukkan sikap …",
+    opts: [
+      "Penolakan total terhadap perubahan",
+      "Selektivitas budaya — menerima unsur modern yang sesuai tanpa meninggalkan tradisi inti",
+      "Etnosentrisme yang berlebihan",
+      "Homogenisasi budaya"
+    ],
+    ans: 1
+  },
+  {
+    topic: "Pranata Sosial",
+    q: "Pranata sosial (social institution) dalam antropologi adalah …",
+    opts: [
+      "Gedung atau fasilitas fisik milik masyarakat",
+      "Sistem norma dan aturan yang mengorganisasi perilaku manusia dalam memenuhi kebutuhan pokok hidupnya",
+      "Lembaga pemerintah yang mengatur kependudukan",
+      "Kelompok masyarakat yang tinggal di satu wilayah administratif"
+    ],
+    ans: 1
+  },
+  {
+    topic: "Pranata Sosial",
+    q: "Pernikahan adat sebagai bagian dari pranata keluarga berfungsi untuk …",
+    opts: [
+      "Meningkatkan status ekonomi keluarga semata",
+      "Mengatur hubungan antara individu, keluarga, dan masyarakat serta melegitimasi keturunan",
+      "Mencegah perpindahan penduduk antar daerah",
+      "Menentukan siapa yang berhak memimpin komunitas adat"
+    ],
+    ans: 1
+  },
+  {
+    topic: "Kesenian Tradisional",
+    q: "Wayang kulit selain sebagai seni pertunjukan juga berfungsi sebagai media …",
+    opts: [
+      "Propaganda politik semata",
+      "Pendidikan moral, penyebaran nilai budaya, dan ritual spiritual",
+      "Hiburan komersial tanpa makna budaya",
+      "Alat pemersatu berbagai bahasa daerah"
+    ],
+    ans: 1
+  },
+  {
+    topic: "Upacara Adat",
+    q: "Fungsi sosial upacara adat dalam masyarakat tradisional antara lain adalah …",
+    opts: [
+      "Mengisolasi masyarakat dari perkembangan zaman",
+      "Memperkuat solidaritas kelompok, menjaga nilai budaya, dan menandai peralihan tahap kehidupan",
+      "Membatasi interaksi dengan kelompok budaya lain",
+      "Menggantikan fungsi hukum formal negara"
+    ],
+    ans: 1
+  },
+  {
+    topic: "Globalisasi & Budaya",
+    q: "Dampak negatif globalisasi terhadap kebudayaan lokal yang paling menonjol adalah …",
+    opts: [
+      "Meningkatnya apresiasi masyarakat terhadap budaya lokal",
+      "Mudahnya akses terhadap informasi dan pendidikan",
+      "Terjadinya cultural imperialism yang dapat menggerus identitas dan keunikan budaya lokal",
+      "Bertambahnya variasi budaya baru yang memperkaya khazanah bangsa"
+    ],
+    ans: 2
+  },
+  {
+    topic: "Gegar Budaya",
+    q: "Seseorang yang pindah ke negara lain dan merasa cemas, bingung, serta kesulitan beradaptasi dengan nilai dan kebiasaan setempat mengalami …",
+    opts: ["Akulturasi", "Asimilasi", "Gegar budaya (culture shock)", "Etnosentrisme"],
+    ans: 2
+  },
+  {
+    topic: "Revitalisasi Budaya",
+    q: "Revitalisasi budaya adalah upaya …",
+    opts: [
+      "Menghapus budaya lama dan menggantinya dengan budaya yang lebih modern",
+      "Menghidupkan kembali unsur-unsur budaya yang hampir punah agar tetap relevan di masa kini",
+      "Menyebarkan budaya lokal ke seluruh dunia secara agresif",
+      "Mempertahankan budaya secara kaku tanpa perubahan apa pun"
+    ],
+    ans: 1
+  },
+  {
+    topic: "Hak Budaya",
+    q: "Hak atas budaya (cultural rights) yang diakui secara internasional mencakup hak setiap orang untuk …",
+    opts: [
+      "Memaksakan budayanya kepada kelompok lain",
+      "Berpartisipasi dalam kehidupan budaya, menikmati seni, dan mendapat perlindungan atas karya budayanya",
+      "Menolak membayar pajak dengan alasan adat budaya",
+      "Menggunakan hukum adat menggantikan hukum negara dalam segala aspek kehidupan"
+    ],
+    ans: 1
+  },
+  {
+    topic: "Antropologi Terapan",
+    q: "Antropologi terapan (applied anthropology) menggunakan pengetahuan antropologi untuk …",
+    opts: [
+      "Mengembangkan teori murni tanpa aplikasi praktis di lapangan",
+      "Memecahkan masalah nyata dalam masyarakat seperti pembangunan, kesehatan, dan pendidikan",
+      "Melakukan penelitian laboratorium tentang genetika manusia",
+      "Mempelajari fosil manusia purba saja"
+    ],
+    ans: 1
+  },
+  {
+    topic: "Pelestarian Budaya",
+    q: "Peran generasi muda dalam melestarikan budaya lokal di era digital paling tepat diwujudkan melalui …",
+    opts: [
+      "Menolak semua teknologi modern demi menjaga kemurnian tradisi",
+      "Memanfaatkan media digital untuk mendokumentasikan, mempromosikan, dan mengajarkan budaya lokal kepada khalayak luas",
+      "Hanya mempelajari budaya asing yang lebih populer di dunia",
+      "Menyerahkan seluruh tanggung jawab pelestarian kepada pemerintah"
+    ],
+    ans: 1
+  }
+];
+
+const letters = ['A','B','C','D'];
+const form = document.getElementById('quiz-form');
+const bar  = document.getElementById('progress-bar');
+const warn = document.getElementById('warn-msg');
+const hasilDiv = document.getElementById('hasil');
+const submitBtn = document.getElementById('submit-btn');
+
+questions.forEach((item, i) => {
+  const card = document.createElement('div');
+  card.className = 'question-card';
+  card.id = 'card-' + i;
+  const optsHTML = item.opts.map((opt, j) => `
+    <label class="option-label" id="lbl-${i}-${j}">
+      <input type="radio" name="q${i}" value="${j}" />
+      <span class="opt-letter">${letters[j]}</span>
+      <span class="opt-text">${opt}</span>
+    </label>`).join('');
+  card.innerHTML = `
+    <div class="q-meta">
+      <span class="q-num">${String(i+1).padStart(2,'0')}.</span>
+      <span class="q-tag">${item.topic}</span>
+    </div>
+    <p class="q-text">${item.q}</p>
+    <div class="options">${optsHTML}</div>`;
+  form.appendChild(card);
+});
+
+function updateProgress() {
+  let answered = 0;
+  questions.forEach((_,i) => { if (document.querySelector('input[name="q'+i+'"]:checked')) answered++; });
+  bar.style.width = (answered / questions.length * 100) + '%';
+}
+form.addEventListener('change', updateProgress);
+
+submitBtn.addEventListener('click', () => {
+  const unanswered = [];
+  questions.forEach((_,i) => {
+    const card = document.getElementById('card-' + i);
+    if (!document.querySelector('input[name="q'+i+'"]:checked')) {
+      unanswered.push(i); card.classList.add('unanswered');
+    } else { card.classList.remove('unanswered'); }
+  });
+
+  if (unanswered.length > 0) {
+    warn.style.display = 'block';
+    document.getElementById('card-' + unanswered[0]).scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+  warn.style.display = 'none';
+  submitBtn.disabled = true;
+  form.querySelectorAll('input[type="radio"]').forEach(r => r.disabled = true);
+
+  let correct = 0;
+  const details = [];
+  questions.forEach((item, i) => {
+    const selected = parseInt(document.querySelector('input[name="q'+i+'"]:checked').value);
+    const isOk = selected === item.ans;
+    if (isOk) correct++;
+    for (let j = 0; j < item.opts.length; j++) {
+      const lbl = document.getElementById('lbl-'+i+'-'+j);
+      if (j === item.ans) lbl.classList.add('correct');
+      else if (j === selected && !isOk) lbl.classList.add('wrong');
+    }
+    details.push({ q: i+1, topic: item.topic, ans: item.ans, sel: selected, ok: isOk, ansText: item.opts[item.ans], selText: item.opts[selected] });
+  });
+
+  const score = Math.round(correct / questions.length * 100);
+  let predikat, color;
+  if (score >= 90) { predikat = '&#127942; Sangat Baik'; color = '#7DCCA4'; }
+  else if (score >= 75) { predikat = '&#10003; Baik'; color = '#A8D08D'; }
+  else if (score >= 60) { predikat = '&#128218; Cukup'; color = '#F0C040'; }
+  else { predikat = '&#128214; Perlu Belajar Lagi'; color = '#E07070'; }
+
+  const kunciHTML = details.map(d => `
+    <div class="kunci-item ${d.ok ? 'ok' : ''}">
+      <div class="ki-no">Soal ${d.q} &mdash; ${d.topic}</div>
+      <div class="ki-ans">&#10003; Benar: ${letters[d.ans]}. ${d.ansText}</div>
+      ${!d.ok ? '<div class="ki-your">&#10007; Jawaban Anda: '+letters[d.sel]+'. '+d.selText+'</div>' : ''}
+    </div>`).join('');
+
+  hasilDiv.innerHTML = `
+    <div class="score-label">Nilai Kamu</div>
+    <div class="score-num">${score}</div>
+    <div class="score-of">${correct} dari ${questions.length} soal benar</div>
+    <div class="predikat" style="border-color:${color}55;color:${color}">${predikat}</div>
+    <div class="divider"></div>
+    <div class="summary-row">
+      <div class="stat"><div class="val g">${correct}</div><div class="lbl">Benar</div></div>
+      <div class="stat"><div class="val r">${questions.length - correct}</div><div class="lbl">Salah</div></div>
+      <div class="stat"><div class="val">${questions.length}</div><div class="lbl">Total Soal</div></div>
+    </div>
+    <div class="kunci-title">Kunci Jawaban &amp; Pembahasan</div>
+    <div class="kunci-grid">${kunciHTML}</div>
+    <button id="retry-btn">&#128260; Coba Lagi</button>`;
+  hasilDiv.style.display = 'block';
+  hasilDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  document.getElementById('retry-btn').addEventListener('click', () => location.reload());
+});
+</script>
+</body>
+</html>

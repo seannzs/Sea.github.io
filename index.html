@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Kuis PJOK — Pencak Silat · Senam · Kebugaran · HIV</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F2F4F0;--surface:#FAFBF9;--ink:#141A12;
+  --muted:#6A7860;--border:#D8E0D0;--r:10px;
+  --c1:#2E6B1A;--c2:#1A4E8C;--c3:#8C3A1A;--c4:#6A1A8C;--c5:#8C1A2E;
+  --ok:#1F5C38;--no:#8C1A1A
+}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;padding-bottom:60px}
+
+/* HEADER */
+header{background:var(--ink);color:#F2F4F0;padding:38px 16px 34px;text-align:center;position:relative;overflow:hidden}
+header::before{content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 55% 70% at 10% 50%,rgba(46,107,26,.3),transparent),
+             radial-gradient(ellipse 45% 60% at 90% 30%,rgba(140,26,46,.2),transparent)}
+.h-label{position:relative;display:inline-block;font-size:.64rem;font-weight:600;
+  letter-spacing:.22em;text-transform:uppercase;color:#A8D890;
+  background:rgba(168,216,144,.1);border:1px solid rgba(168,216,144,.25);
+  padding:4px 14px;border-radius:99px;margin-bottom:12px}
+header h1{position:relative;font-family:'Playfair Display',serif;font-size:clamp(1.6rem,5vw,2.6rem);line-height:1.2}
+header p{position:relative;margin-top:8px;color:#7A9068;font-size:.87rem}
+.h-tags{position:relative;display:flex;flex-wrap:wrap;justify-content:center;gap:7px;margin-top:16px}
+.htag{font-size:.64rem;font-weight:700;padding:4px 11px;border-radius:99px;border:1px solid;letter-spacing:.04em}
+.t1{color:var(--c1);background:rgba(46,107,26,.09);border-color:rgba(46,107,26,.28)}
+.t2{color:var(--c2);background:rgba(26,78,140,.09);border-color:rgba(26,78,140,.28)}
+.t3{color:var(--c3);background:rgba(140,58,26,.09);border-color:rgba(140,58,26,.28)}
+.t4{color:var(--c4);background:rgba(106,26,140,.09);border-color:rgba(106,26,140,.28)}
+.t5{color:var(--c5);background:rgba(140,26,46,.09);border-color:rgba(140,26,46,.28)}
+
+/* PROGRESS */
+#pg-wrap{position:sticky;top:0;z-index:20;background:var(--ink)}
+#pg-bar{height:3px;background:var(--c1);width:0%;transition:width .35s}
+#pg-txt{text-align:right;padding:4px 14px 5px;font-size:.67rem;color:#4A5A40;background:var(--ink)}
+
+.wrap{max-width:740px;margin:0 auto;padding:26px 14px 0}
+
+/* SECTION */
+.sec-head{display:flex;align-items:center;gap:10px;margin:28px 0 14px}
+.sec-head .ln{flex:1;height:1px;background:var(--border)}
+.sec-head h2{font-family:'Playfair Display',serif;font-size:.9rem;font-weight:700;
+  white-space:nowrap;padding:5px 14px;border-radius:99px;border:1.5px solid}
+.sh1 h2{color:var(--c1);border-color:rgba(46,107,26,.3);background:rgba(46,107,26,.06)}
+.sh2 h2{color:var(--c2);border-color:rgba(26,78,140,.3);background:rgba(26,78,140,.06)}
+.sh3 h2{color:var(--c3);border-color:rgba(140,58,26,.3);background:rgba(140,58,26,.06)}
+.sh4 h2{color:var(--c4);border-color:rgba(106,26,140,.3);background:rgba(106,26,140,.06)}
+.sh5 h2{color:var(--c5);border-color:rgba(140,26,46,.3);background:rgba(140,26,46,.06)}
+
+/* CARD */
+.card{background:var(--surface);border:1px solid var(--border);border-left:4px solid;
+  border-radius:var(--r);padding:20px 16px;margin-bottom:11px;transition:box-shadow .2s}
+.card:hover{box-shadow:0 3px 14px rgba(0,0,0,.07)}
+.card.unanswered{border-color:#C89030;box-shadow:0 0 0 3px rgba(200,144,48,.12)}
+.cc1{border-left-color:var(--c1)} .cc2{border-left-color:var(--c2)}
+.cc3{border-left-color:var(--c3)} .cc4{border-left-color:var(--c4)}
+.cc5{border-left-color:var(--c5)}
+
+.qm{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.qn{font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:700;min-width:26px}
+.n1{color:var(--c1)} .n2{color:var(--c2)} .n3{color:var(--c3)} .n4{color:var(--c4)} .n5{color:var(--c5)}
+.qtag{font-size:.64rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);background:var(--bg);border:1px solid var(--border);padding:2px 9px;border-radius:99px}
+
+.qt{font-size:.93rem;line-height:1.72;font-weight:500;margin-bottom:14px}
+
+.opts{display:flex;flex-direction:column;gap:7px}
+.opt{display:flex;align-items:flex-start;gap:10px;padding:10px 13px;
+  border:1.5px solid var(--border);border-radius:8px;cursor:pointer;
+  transition:border-color .14s,background .14s;user-select:none;
+  -webkit-tap-highlight-color:transparent}
+.opt:hover,.opt:focus-within{border-color:var(--c1);background:#EFF5EB}
+.opt input{display:none}
+.ol{flex-shrink:0;width:24px;height:24px;border-radius:50%;background:var(--bg);
+  border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;
+  font-size:.7rem;font-weight:700;color:var(--muted);transition:all .14s;margin-top:1px}
+.opt:has(input:checked){border-color:var(--c1);background:#EFF5EB}
+.opt:has(input:checked) .ol{background:var(--c1);border-color:var(--c1);color:#fff}
+.ot{font-size:.89rem;line-height:1.52;padding-top:2px}
+
+.opt.correct{border-color:var(--ok);background:#EAF3EE}
+.opt.correct .ol{background:var(--ok);border-color:var(--ok);color:#fff}
+.opt.wrong{border-color:var(--no);background:#FAF0EF}
+.opt.wrong .ol{background:var(--no);border-color:var(--no);color:#fff}
+
+/* SUBMIT */
+#btn-area{text-align:center;margin-top:34px}
+#sub-btn{font-family:'DM Sans',sans-serif;font-size:.96rem;font-weight:600;
+  background:var(--ink);color:#F2F4F0;border:none;padding:14px 48px;border-radius:8px;
+  cursor:pointer;transition:background .18s,transform .1s;letter-spacing:.04em;
+  width:100%;max-width:320px}
+#sub-btn:hover{background:#1E2A18;transform:translateY(-1px)}
+#sub-btn:active{transform:translateY(0)}
+#sub-btn:disabled{opacity:.4;cursor:not-allowed}
+#warn{display:none;margin-top:10px;font-size:.83rem;color:#8A6000;
+  background:#FFF8E6;border:1px solid #DDB840;border-radius:8px;padding:9px 14px;text-align:center}
+
+/* HASIL */
+#hasil{display:none;margin-top:34px;background:var(--ink);color:#F2F4F0;
+  border-radius:var(--r);padding:36px 20px;text-align:center;animation:fu .5s ease both}
+@keyframes fu{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.hl{font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:#5A6A50;margin-bottom:8px}
+.hn{font-family:'Playfair Display',serif;font-size:clamp(3rem,14vw,5rem);font-weight:700;line-height:1;color:#A8D890}
+.ho{font-size:.85rem;color:#6A7860;margin-top:5px}
+.hpred{display:inline-block;margin-top:16px;font-size:.95rem;font-weight:600;
+  padding:6px 20px;border-radius:99px;border:1.5px solid rgba(255,255,255,.15)}
+.hdiv{width:40px;height:2px;background:rgba(255,255,255,.1);margin:20px auto}
+
+.sec-sc{display:flex;justify-content:center;gap:9px;flex-wrap:wrap;margin-bottom:20px}
+.sc-box{text-align:center;padding:9px 12px;border-radius:8px;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);min-width:76px}
+.sc-v{font-size:1.2rem;font-weight:700}
+.sc-l{font-size:.62rem;color:#6A7860;margin-top:2px;text-transform:uppercase;letter-spacing:.05em}
+
+.sum-row{display:flex;justify-content:center;gap:28px;flex-wrap:wrap;margin-bottom:22px}
+.sv{font-size:1.4rem;font-weight:700}
+.sv-g{color:#88D8AA} .sv-r{color:#E08080}
+.sl{font-size:.7rem;color:#6A7860;margin-top:2px}
+
+.kt{font-family:'Playfair Display',serif;font-size:1.1rem;margin-bottom:14px}
+.kg{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:8px;text-align:left}
+.ki{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);
+  border-radius:8px;padding:10px 12px;font-size:.81rem;line-height:1.52}
+.ki.ok{border-color:rgba(168,216,144,.2)}
+.ki-no{color:#A8D890;font-weight:700;margin-bottom:3px;font-size:.74rem}
+.ki-ans{color:#88D8AA;font-weight:600}
+.ki-your{color:#E08080;font-size:.77rem;margin-top:2px}
+.ki-ex{color:#6A7860;font-size:.75rem;margin-top:4px;font-style:italic}
+
+#retry{margin-top:22px;font-family:'DM Sans',sans-serif;font-size:.9rem;font-weight:600;
+  background:transparent;color:#F2F4F0;border:1.5px solid rgba(255,255,255,.2);
+  padding:11px 32px;border-radius:8px;cursor:pointer;transition:all .2s;
+  width:100%;max-width:240px}
+#retry:hover{border-color:rgba(255,255,255,.5);background:rgba(255,255,255,.06)}
+
+@media(max-width:400px){
+  .card{padding:15px 12px}
+  #hasil{padding:26px 12px}
+  .kg{grid-template-columns:1fr}
+  .sec-sc{gap:6px}
+  .sc-box{min-width:65px;padding:8px 8px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="h-label">PJOK &mdash; SMA / SMK</div>
+  <h1>Kuis Pendidikan Jasmani</h1>
+  <p>20 soal pilihan ganda &mdash; jawab semua lalu kirim</p>
+  <div class="h-tags">
+    <span class="htag t1">🥋 Pencak Silat</span>
+    <span class="htag t2">🤸 Senam Lantai</span>
+    <span class="htag t3">🎪 Senam Aerobatik</span>
+    <span class="htag t4">💪 Kebugaran Jasmani</span>
+    <span class="htag t5">🎗️ HIV/AIDS</span>
+  </div>
+</header>
+
+<div id="pg-wrap">
+  <div id="pg-bar"></div>
+  <div id="pg-txt">0 / 20 dijawab</div>
+</div>
+
+<div class="wrap">
+  <div id="qform"></div>
+  <div id="btn-area">
+    <button id="sub-btn">Kirim Jawaban</button>
+    <div id="warn">⚠️ Masih ada soal yang belum dijawab. Lengkapi semua terlebih dahulu.</div>
+  </div>
+  <div id="hasil"></div>
+</div>
+
+<script>
+const secs=[
+  {id:'1',title:'Pencak Silat — Seni Bela Diri Asli Indonesia',cls:'sh1',cc:'cc1',nc:'n1',col:'#A8D890'},
+  {id:'2',title:'Senam Lantai — Gerakan Dasar &amp; Teknik',cls:'sh2',cc:'cc2',nc:'n2',col:'#90B8F0'},
+  {id:'3',title:'Senam Aerobatik — Koordinasi &amp; Keseimbangan',cls:'sh3',cc:'cc3',nc:'n3',col:'#F0B890'},
+  {id:'4',title:'Kebugaran Jasmani — Komponen &amp; Latihan',cls:'sh4',cc:'cc4',nc:'n4',col:'#D090F0'},
+  {id:'5',title:'HIV/AIDS — Pengetahuan, Pencegahan &amp; Sikap',cls:'sh5',cc:'cc5',nc:'n5',col:'#F09090'}
+];
+
+const Q=[
+  /* ══ PENCAK SILAT 1–4 ══ */
+  {s:'1',t:'Sejarah',
+   q:'Pencak silat berasal dari Indonesia dan telah diakui dunia. Badan internasional yang menaungi pencak silat di tingkat dunia adalah …',
+   o:['IPSI (Ikatan Pencak Silat Indonesia)','PERSILAT (Persekutuan Pencak Silat Antara Bangsa)','WKF (World Karate Federation)','WUSHU Federation'],
+   a:1,ex:'PERSILAT didirikan tahun 1980 di Jakarta oleh 4 negara pendiri: Indonesia, Malaysia, Singapura, dan Brunei. IPSI adalah induk organisasi di tingkat nasional Indonesia.'},
+
+  {s:'1',t:'Teknik Dasar',
+   q:'Dalam pencak silat, posisi kuda-kuda yang menempatkan berat badan sepenuhnya di satu kaki sementara kaki lain diluruskan ke samping disebut kuda-kuda …',
+   o:['Kuda-kuda tengah','Kuda-kuda depan','Kuda-kuda samping','Kuda-kuda belakang'],
+   a:2,ex:'Kuda-kuda samping: berat badan bertumpu pada satu kaki, kaki lain lurus ke samping sebagai penyeimbang. Berguna untuk serangan atau tangkisan ke arah lateral.'},
+
+  {s:'1',t:'Serangan',
+   q:'Pukulan dalam pencak silat yang dilakukan dengan mengayunkan tangan secara melingkar dari luar ke dalam dengan sasaran kepala atau leher lawan disebut …',
+   o:['Pukulan lurus (jab)','Pukulan bandul','Pukulan tegak','Tebasan'],
+   a:1,ex:'Pukulan bandul: ayunan tangan seperti bandul jam dari bawah ke atas atau dari samping melingkar ke target. Pukulan lurus = pukulan sejajar lurus ke depan.'},
+
+  {s:'1',t:'Pertandingan',
+   q:'Dalam pertandingan pencak silat kategori tanding, poin tertinggi diberikan untuk teknik …',
+   o:['Pukulan ke badan (1 poin)','Tendangan ke badan (2 poin)','Tendangan ke kepala (3 poin)','Jatuhan yang berhasil (3 poin)'],
+   a:2,ex:'Sistem poin: pukulan badan=1, tendangan badan=2, tendangan kepala=3, jatuhan=3. Tendangan kepala dan jatuhan sama-sama bernilai tertinggi, namun tendangan kepala lebih umum dalam pertandingan.'},
+
+  /* ══ SENAM LANTAI 5–8 ══ */
+  {s:'2',t:'Gerakan Dasar',
+   q:'Gerakan berguling ke depan (forward roll) dalam senam lantai diawali dengan posisi …',
+   o:[
+     'Berdiri tegak, lalu langsung melompat dan berguling',
+     'Jongkok, kedua tangan menumpu selebar bahu di matras, dagu dirapatkan ke dada, kemudian mendorong tubuh ke depan',
+     'Berbaring telentang lalu mengangkat kaki ke atas',
+     'Berdiri dengan satu kaki lalu jatuh ke depan'
+   ],
+   a:1,ex:'Teknik forward roll yang benar: jongkok → tangan tumpu selebar bahu → dagu ke dada (untuk melindungi kepala) → dorong pinggang ke atas → guling ke depan → kembali jongkok/berdiri.'},
+
+  {s:'2',t:'Gerakan Dasar',
+   q:'Gerakan kayang dalam senam lantai bermanfaat untuk melatih …',
+   o:['Kekuatan otot perut dan daya ledak kaki','Kelentukan (fleksibilitas) tulang belakang, bahu, dan pinggul','Kecepatan reaksi dan koordinasi tangan-mata','Keseimbangan statis pada satu kaki'],
+   a:1,ex:'Kayang (back bend) adalah gerakan melengkungkan tubuh ke belakang hingga kedua tangan menyentuh lantai. Gerakan ini meregangkan seluruh anterior tubuh: dada, perut, pinggul, dan memperkuat bahu serta punggung.'},
+
+  {s:'2',t:'Keseimbangan',
+   q:'Sikap lilin dalam senam lantai adalah gerakan …',
+   o:[
+     'Berdiri dengan satu kaki, tangan di pinggang',
+     'Berbaring lalu mengguling menyamping',
+     'Bertumpu pada kedua tangan dengan kaki lurus ke atas (handstand)',
+     'Berbaring telentang, mengangkat kedua kaki dan pinggul tegak lurus ke atas, ditopang kedua tangan di pinggang'
+   ],
+   a:3,ex:'Sikap lilin: terlentang → angkat kaki + pinggul vertikal → tangan menopang pinggang. Berbeda dengan handstand (bertumpu tangan). Manfaat: melatih keseimbangan dan kekuatan otot perut serta punggung.'},
+
+  {s:'2',t:'Lompatan',
+   q:'Lompat kangkang (straddle vault) dalam senam lantai dilakukan dengan cara …',
+   o:[
+     'Melompat melewati peti loncat dengan kedua kaki rapat dan lurus ke atas',
+     'Melompat dengan bertumpu pada papan loncat dan melewati peti dengan membuka kedua kaki ke samping',
+     'Berguling di atas peti loncat lalu turun ke sisi lain',
+     'Melompat sambil melakukan putaran 360° di udara'
+   ],
+   a:1,ex:'Lompat kangkang: awalan sprint → tolak papan → kedua tangan menumpu peti → buka kaki ke samping (kangkang) melewati peti → mendarat. Kunci: saat melayang posisi badan jangan terlalu condong ke depan.'},
+
+  /* ══ SENAM AEROBATIK 9–12 ══ */
+  {s:'3',t:'Pengertian',
+   q:'Senam aerobatik (acrobatic gymnastics) adalah disiplin senam yang menekankan pada …',
+   o:[
+     'Gerakan ritmik yang diiringi musik secara individual dengan alat pita, bola, atau tali',
+     'Gerakan akrobatik yang dilakukan berpasangan atau kelompok, menggabungkan elemen keseimbangan, fleksibilitas, kekuatan, dan lemparan/tangkapan',
+     'Latihan aerobik intensitas tinggi yang dilakukan secara massal',
+     'Senam yang hanya boleh dilakukan di atas balok keseimbangan (balance beam)'
+   ],
+   a:1,ex:'Senam aerobatik/akrobatik: dilakukan berpasangan (men\'s pair, women\'s pair, mixed pair) atau kelompok 3-5 orang. Ada peran "base" (penopang) dan "top" (yang diangkat). Dinilai dari nilai artistik dan kesulitan teknis.'},
+
+  {s:'3',t:'Teknik',
+   q:'Dalam senam aerobatik, istilah "base" mengacu pada …',
+   o:[
+     'Nilai dasar (base score) yang diberikan juri sebelum pemotongan',
+     'Atlet yang bertugas sebagai penopang/tumpuan bagi pasangan atau anggota kelompok lainnya',
+     'Matras khusus yang digunakan dalam pertandingan resmi',
+     'Gerakan awal sebelum melakukan elemen akrobatik utama'
+   ],
+   a:1,ex:'Base = penopang: tubuhnya menjadi tumpuan. Top = yang diangkat/dilempar. Middle = penghubung (pada kelompok). Base memerlukan kekuatan luar biasa, sementara top memerlukan fleksibilitas dan keberanian.'},
+
+  {s:'3',t:'Komponen',
+   q:'Komponen fisik yang PALING dominan dibutuhkan oleh atlet "top" (yang diangkat) dalam senam aerobatik adalah …',
+   o:['Kekuatan maksimal dan massa otot besar','Kelentukan tubuh, keseimbangan, dan keberanian','Daya tahan kardiovaskular yang tinggi','Kecepatan sprint dan daya ledak kaki'],
+   a:1,ex:'Atlet top harus ringan, lentur, dan punya keseimbangan luar biasa agar mudah ditopang, dilempar, dan melakukan gerakan akrobatik di udara. Base sebaliknya — butuh kekuatan maksimal dan stabilitas.'},
+
+  {s:'3',t:'Penilaian',
+   q:'Dalam pertandingan senam aerobatik, aspek yang TIDAK dinilai oleh juri adalah …',
+   o:['Nilai artistik (penampilan dan koreografi)','Nilai kesulitan teknis gerakan','Tinggi badan dan berat badan atlet','Eksekusi (ketepatan dan kualitas gerakan)'],
+   a:2,ex:'Penilaian senam aerobatik terdiri dari: Execution (E-score), Difficulty (D-score), dan Artistic/Choreography. Fisik atlet (tinggi/berat) tidak menjadi bagian dari sistem penilaian resmi.'},
+
+  /* ══ KEBUGARAN JASMANI 13–16 ══ */
+  {s:'4',t:'Komponen',
+   q:'Kemampuan jantung dan paru-paru untuk menyuplai oksigen ke seluruh tubuh secara efisien selama aktivitas fisik yang berkepanjangan disebut …',
+   o:['Kekuatan otot (muscular strength)','Daya tahan kardiorespirasi (cardiovascular endurance)','Komposisi tubuh (body composition)','Fleksibilitas (flexibility)'],
+   a:1,ex:'Daya tahan kardiorespirasi adalah komponen kebugaran terpenting untuk kesehatan jangka panjang. Diukur dengan VO₂max. Latihan: lari, berenang, bersepeda secara konsisten 3–5x seminggu.'},
+
+  {s:'4',t:'Komponen',
+   q:'Seorang atlet dapat melakukan tendangan tinggi tanpa cedera karena ototnya tidak kaku. Kemampuan ini disebut …',
+   o:['Kelincahan (agility)','Koordinasi (coordination)','Kelenturan (flexibility)','Kecepatan (speed)'],
+   a:2,ex:'Fleksibilitas/kelenturan: kemampuan sendi bergerak dalam rentang penuh tanpa rasa sakit. Dilatih dengan peregangan statis (ditahan 20–30 detik) dan dinamis. Penting untuk mencegah cedera.'},
+
+  {s:'4',t:'Latihan',
+   q:'Prinsip latihan kebugaran FITT singkatan dari …',
+   o:[
+     'Frequency, Intensity, Type, Time',
+     'Force, Interval, Training, Technique',
+     'Frequency, Interval, Tempo, Timing',
+     'Focus, Intensity, Target, Threshold'
+   ],
+   a:0,ex:'FITT: Frequency(seberapa sering/minggu), Intensity(seberapa keras — %denyut jantung maks), Type(jenis latihan), Time(durasi tiap sesi). Prinsip ini menjadi panduan merancang program latihan yang efektif dan aman.'},
+
+  {s:'4',t:'Tes Kebugaran',
+   q:'Tes lari 12 menit (Cooper Test) dirancang untuk mengukur …',
+   o:[
+     'Kekuatan otot tungkai maksimal',
+     'Daya tahan kardiorespirasi (VO₂max perkiraan)',
+     'Kelincahan dan kecepatan reaksi',
+     'Komposisi lemak tubuh (body fat percentage)'
+   ],
+   a:1,ex:'Cooper Test (1968): lari selama 12 menit, catat jarak tempuh. Rumus VO₂max ≈ (jarak(m) − 504,9) / 44,73. Semakin jauh jarak yang ditempuh, semakin baik kebugaran kardiorespirasi seseorang.'},
+
+  /* ══ HIV/AIDS 17–20 ══ */
+  {s:'5',t:'Pengetahuan Dasar',
+   q:'HIV menyerang sistem kekebalan tubuh manusia dengan cara menghancurkan sel …',
+   o:['Sel darah merah (eritrosit)','Sel trombosit (platelet)','Sel CD4+ (T-helper lymphocyte)','Sel epitel saluran pernapasan'],
+   a:2,ex:'HIV (Human Immunodeficiency Virus) secara spesifik menginfeksi dan menghancurkan sel CD4+ (T-helper). Ketika CD4+ turun di bawah 200 sel/mm³, kondisi berkembang menjadi AIDS. Sel CD4+ adalah komandan sistem imun tubuh.'},
+
+  {s:'5',t:'Penularan',
+   q:'Di antara pilihan berikut, yang BUKAN merupakan cara penularan HIV adalah …',
+   o:[
+     'Hubungan seksual tanpa pengaman dengan penderita HIV',
+     'Berbagi jarum suntik yang tidak steril',
+     'Bersentuhan tangan, berpelukan, atau berbagi peralatan makan dengan ODHA',
+     'Transmisi dari ibu HIV positif ke bayi saat hamil, persalinan, atau menyusui'
+   ],
+   a:2,ex:'HIV TIDAK menular melalui: jabat tangan, pelukan, batuk/bersin, berbagi makanan/minuman, gigitan nyamuk, atau penggunaan toilet bersama. HIV hanya menular melalui cairan tubuh tertentu: darah, semen, cairan vagina, dan ASI.'},
+
+  {s:'5',t:'Pencegahan',
+   q:'Program PMTCT (Prevention of Mother-to-Child Transmission) bertujuan untuk …',
+   o:[
+     'Mengobati ibu yang terinfeksi HIV hingga sembuh total',
+     'Mencegah penularan HIV dari ibu positif kepada bayinya melalui intervensi medis selama kehamilan, persalinan, dan menyusui',
+     'Mensterilkan semua peralatan medis di rumah sakit',
+     'Memberikan vaksin HIV kepada ibu hamil di daerah risiko tinggi'
+   ],
+   a:1,ex:'PMTCT meliputi: pemberian ARV (antiretroviral) pada ibu selama kehamilan, persalinan SC (jika diindikasikan), pemberian ARV profilaksis pada bayi, dan edukasi tentang pemberian susu formula sebagai alternatif ASI.'},
+
+  {s:'5',t:'Sikap & Sosial',
+   q:'Sikap yang TEPAT dari seorang pelajar terhadap teman yang diketahui mengidap HIV adalah …',
+   o:[
+     'Menjauhi dan menghindari semua kontak fisik untuk melindungi diri',
+     'Memberi tahu seluruh teman agar mereka waspada',
+     'Tetap bersikap normal, memberikan dukungan emosional, dan tidak mendiskriminasi karena HIV tidak menular lewat kontak sehari-hari',
+     'Meminta guru untuk memindahkan teman tersebut ke kelas lain'
+   ],
+   a:2,ex:'Diskriminasi terhadap ODHA (Orang Dengan HIV/AIDS) tidak berdasar secara ilmiah dan melanggar hak asasi. HIV tidak menular melalui pergaulan sehari-hari di sekolah. Dukungan sosial justru meningkatkan kualitas hidup ODHA dan kepatuhan pengobatan ARV.'}
+];
+
+/* ── BUILD DOM ── */
+const L=['A','B','C','D'];
+const qform=document.getElementById('qform');
+const pgbar=document.getElementById('pg-bar');
+const pgtxt=document.getElementById('pg-txt');
+const warn=document.getElementById('warn');
+const hasil=document.getElementById('hasil');
+const subBtn=document.getElementById('sub-btn');
+
+secs.forEach(sec=>{
+  const sh=document.createElement('div');
+  sh.className='sec-head '+sec.cls;
+  sh.innerHTML='<div class="ln"></div><h2>'+sec.title+'</h2><div class="ln"></div>';
+  qform.appendChild(sh);
+
+  Q.forEach((item,i)=>{
+    if(item.s!==sec.id)return;
+    const card=document.createElement('div');
+    card.className='card '+sec.cc;
+    card.id='c'+i;
+
+    const optsHtml=item.o.map((o,j)=>`
+      <label class="opt" id="l${i}${j}">
+        <input type="radio" name="q${i}" value="${j}">
+        <span class="ol">${L[j]}</span>
+        <span class="ot">${o}</span>
+      </label>`).join('');
+
+    card.innerHTML=`
+      <div class="qm">
+        <span class="qn ${sec.nc}">${String(i+1).padStart(2,'0')}.</span>
+        <span class="qtag">${item.t}</span>
+      </div>
+      <p class="qt">${item.q}</p>
+      <div class="opts">${optsHtml}</div>`;
+    qform.appendChild(card);
+  });
+});
+
+function updPg(){
+  let n=0;
+  Q.forEach((_,i)=>{if(document.querySelector('input[name="q'+i+'"]:checked'))n++;});
+  pgbar.style.width=(n/Q.length*100)+'%';
+  pgtxt.textContent=n+' / '+Q.length+' dijawab';
+}
+qform.addEventListener('change',updPg);
+
+subBtn.addEventListener('click',()=>{
+  const miss=[];
+  Q.forEach((_,i)=>{
+    const c=document.getElementById('c'+i);
+    if(!document.querySelector('input[name="q'+i+'"]:checked')){miss.push(i);c.classList.add('unanswered');}
+    else c.classList.remove('unanswered');
+  });
+  if(miss.length){
+    warn.style.display='block';
+    document.getElementById('c'+miss[0]).scrollIntoView({behavior:'smooth',block:'center'});
+    return;
+  }
+  warn.style.display='none';
+  subBtn.disabled=true;
+  qform.querySelectorAll('input').forEach(r=>r.disabled=true);
+
+  const ss={'1':0,'2':0,'3':0,'4':0,'5':0};
+  const st={'1':0,'2':0,'3':0,'4':0,'5':0};
+  let tot=0;
+  const det=[];
+
+  Q.forEach((item,i)=>{
+    const sel=parseInt(document.querySelector('input[name="q'+i+'"]:checked').value);
+    const ok=sel===item.a;
+    if(ok){tot++;ss[item.s]++;}
+    st[item.s]++;
+    for(let j=0;j<item.o.length;j++){
+      const lb=document.getElementById('l'+i+j);
+      if(j===item.a)lb.classList.add('correct');
+      else if(j===sel&&!ok)lb.classList.add('wrong');
+    }
+    det.push({q:i+1,t:item.t,s:item.s,a:item.a,sel,ok,at:item.o[item.a],st2:item.o[sel],ex:item.ex});
+  });
+
+  const score=Math.round(tot/Q.length*100);
+  let pred,col;
+  if(score>=90){pred='🏆 Luar Biasa!';col='#A8D890';}
+  else if(score>=75){pred='⭐ Sangat Baik!';col='#90D8C0';}
+  else if(score>=60){pred='📘 Cukup Baik!';col='#F0C840';}
+  else if(score>=40){pred='💪 Terus Berlatih!';col='#F0A060';}
+  else{pred='📖 Pelajari Lagi ya!';col='#E08080';}
+
+  const sn={'1':'Pencak Silat','2':'Senam Lantai','3':'Aerobatik','4':'Kebugaran','5':'HIV/AIDS'};
+  const sc2=secs.reduce((a,s)=>{a[s.id]=s.col;return a},{});
+
+  const ssHTML=Object.keys(ss).map(k=>`
+    <div class="sc-box">
+      <div class="sc-v" style="color:${sc2[k]}">${ss[k]}/${st[k]}</div>
+      <div class="sc-l">${sn[k]}</div>
+    </div>`).join('');
+
+  const kHTML=det.map(d=>`
+    <div class="ki ${d.ok?'ok':''}">
+      <div class="ki-no">Soal ${d.q} — ${d.t}</div>
+      <div class="ki-ans">✓ ${d.at}</div>
+      ${!d.ok?'<div class="ki-your">✗ Jawaban kamu: '+d.st2+'</div>':''}
+      <div class="ki-ex">${d.ex}</div>
+    </div>`).join('');
+
+  hasil.innerHTML=`
+    <div class="hl">Nilai Kamu</div>
+    <div class="hn">${score}</div>
+    <div class="ho">${tot} dari ${Q.length} soal benar</div>
+    <div class="hpred" style="border-color:${col}44;color:${col}">${pred}</div>
+    <div class="hdiv"></div>
+    <div class="sec-sc">${ssHTML}</div>
+    <div class="sum-row">
+      <div><div class="sv sv-g">${tot}</div><div class="sl">Benar</div></div>
+      <div><div class="sv sv-r">${Q.length-tot}</div><div class="sl">Salah</div></div>
+      <div><div class="sv">${Q.length}</div><div class="sl">Total</div></div>
+    </div>
+    <div class="kt">Kunci Jawaban &amp; Penjelasan</div>
+    <div class="kg">${kHTML}</div>
+    <button id="retry">🔄 Coba Lagi</button>`;
+  hasil.style.display='block';
+  hasil.scrollIntoView({behavior:'smooth',block:'start'});
+  document.getElementById('retry').addEventListener('click',()=>location.reload());
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Kuis Bahasa Mandarin — Menyatakan Jam & Waktu — SMA Kelas XI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,600&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #EDE8F5; --surface: #FAF8FD; --ink: #1A1428;
+      --muted: #7A7090; --accent: #5C3F9E; --border: #D5CCEC;
+      --correct: #2B5E3E; --wrong: #8B2020; --radius: 12px;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--ink); min-height: 100vh; padding: 0 0 80px; }
+
+    header {
+      background: var(--ink); color: #EDE8F5;
+      padding: 52px 24px 44px; text-align: center; position: relative; overflow: hidden;
+    }
+    header::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 70% 50%, rgba(92,63,158,.3) 0%, transparent 65%),
+                  radial-gradient(ellipse at 20% 80%, rgba(92,63,158,.18) 0%, transparent 55%);
+    }
+    header .label {
+      position: relative; display: inline-block; font-size: .68rem; font-weight: 600;
+      letter-spacing: .22em; text-transform: uppercase; color: #B89EEC;
+      background: rgba(184,158,236,.1); border: 1px solid rgba(184,158,236,.3);
+      padding: 5px 16px; border-radius: 99px; margin-bottom: 18px;
+    }
+    header h1 {
+      position: relative;
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(1.9rem, 5vw, 3rem); line-height: 1.18;
+    }
+    header .hanzi-deco {
+      position: absolute; right: 5%; top: 50%; transform: translateY(-50%);
+      font-size: 6rem; opacity: .06; user-select: none; line-height: 1;
+    }
+    header .sub {
+      position: relative; margin-top: 10px; color: #9A90B8; font-size: .9rem;
+    }
+    header .difficulty {
+      position: relative; display: inline-block; margin-top: 14px;
+      font-size: .78rem; font-weight: 600; color: #B89EEC;
+      background: rgba(184,158,236,.08); border: 1px solid rgba(184,158,236,.25);
+      padding: 4px 14px; border-radius: 99px; letter-spacing: .06em;
+    }
+
+    #progress-wrap { position: sticky; top: 0; z-index: 10; background: var(--ink); }
+    #progress-bar { height: 3px; background: var(--accent); width: 0%; transition: width .35s ease; }
+    #progress-count {
+      text-align: right; padding: 4px 16px 5px; font-size: .7rem;
+      color: #7A7090; background: var(--ink); letter-spacing: .05em;
+    }
+
+    .container { max-width: 780px; margin: 0 auto; padding: 40px 20px 0; }
+
+    .question-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 32px 28px; margin-bottom: 18px;
+      transition: box-shadow .2s;
+    }
+    .question-card:hover { box-shadow: 0 4px 22px rgba(0,0,0,.07); }
+    .question-card.unanswered { border-color: #C8962A; box-shadow: 0 0 0 3px rgba(200,150,42,.14); }
+
+    .q-meta { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+    .q-num { font-family: 'Playfair Display', serif; font-size: 1.35rem; font-weight: 700; color: var(--accent); min-width: 30px; }
+    .q-tag {
+      font-size: .68rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase;
+      color: var(--muted); background: var(--bg); border: 1px solid var(--border);
+      padding: 3px 10px; border-radius: 99px;
+    }
+    .q-diff {
+      font-size: .65rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+      padding: 3px 9px; border-radius: 99px;
+    }
+    .q-diff.hard { color: #7B2222; background: rgba(123,34,34,.08); border: 1px solid rgba(123,34,34,.2); }
+    .q-diff.medium { color: #5C3F9E; background: rgba(92,63,158,.08); border: 1px solid rgba(92,63,158,.2); }
+
+    .q-text { font-size: 1rem; line-height: 1.72; font-weight: 500; margin-bottom: 20px; }
+    .q-text .hanzi { font-size: 1.8rem; display: block; text-align: center; margin: 10px 0 4px; letter-spacing: .1em; color: var(--accent); }
+    .q-text .pinyin { display: block; text-align: center; font-size: .85rem; color: var(--muted); margin-bottom: 10px; font-style: italic; }
+    .clock-display {
+      text-align: center; font-size: 2.2rem; font-family: 'Playfair Display', serif;
+      color: var(--accent); margin: 14px 0 8px; letter-spacing: .05em;
+      background: var(--bg); border: 1px dashed var(--border); border-radius: 8px; padding: 12px;
+    }
+    .q-note { font-size: .82rem; color: var(--muted); font-style: italic; margin-bottom: 16px; margin-top: -10px; }
+
+    .options { display: flex; flex-direction: column; gap: 9px; }
+    .option-label {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 12px 16px; border: 1.5px solid var(--border); border-radius: 8px;
+      cursor: pointer; transition: border-color .15s, background .15s; user-select: none;
+    }
+    .option-label:hover { border-color: var(--accent); background: #F4F0FD; }
+    .option-label input[type="radio"] { display: none; }
+    .opt-letter {
+      flex-shrink: 0; width: 26px; height: 26px; border-radius: 50%;
+      background: var(--bg); border: 1.5px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: .74rem; font-weight: 700; color: var(--muted);
+      transition: all .15s; margin-top: 1px;
+    }
+    .option-label:has(input:checked) { border-color: var(--accent); background: #F4F0FD; }
+    .option-label:has(input:checked) .opt-letter { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .opt-text { font-size: .92rem; line-height: 1.55; padding-top: 2px; }
+
+    .option-label.correct { border-color: var(--correct); background: #EAF3EE; }
+    .option-label.correct .opt-letter { background: var(--correct); border-color: var(--correct); color: #fff; }
+    .option-label.wrong { border-color: var(--wrong); background: #FAF0EE; }
+    .option-label.wrong .opt-letter { background: var(--wrong); border-color: var(--wrong); color: #fff; }
+
+    #btn-wrap { text-align: center; margin-top: 40px; }
+    #submit-btn {
+      font-family: 'DM Sans', sans-serif; font-size: 1rem; font-weight: 600;
+      background: var(--ink); color: #EDE8F5; border: none;
+      padding: 16px 56px; border-radius: 8px; cursor: pointer;
+      transition: background .2s, transform .1s; letter-spacing: .04em;
+    }
+    #submit-btn:hover { background: #241A3A; transform: translateY(-1px); }
+    #submit-btn:active { transform: translateY(0); }
+    #submit-btn:disabled { opacity: .4; cursor: not-allowed; }
+
+    #warn-msg {
+      display: none; margin-top: 12px; font-size: .86rem; color: #8B6200;
+      background: #FFF8E6; border: 1px solid #DEB84A; border-radius: 8px;
+      padding: 10px 18px; text-align: center;
+    }
+
+    #hasil {
+      display: none; margin-top: 44px; background: var(--ink); color: #EDE8F5;
+      border-radius: var(--radius); padding: 44px 32px; text-align: center;
+      animation: fadeUp .5s ease both;
+    }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }
+    .score-label { font-size: .72rem; letter-spacing: .2em; text-transform: uppercase; color: #8A8098; margin-bottom: 10px; }
+    .score-num { font-family: 'Playfair Display', serif; font-size: clamp(3.5rem,10vw,5.5rem); font-weight: 700; line-height: 1; color: #B89EEC; }
+    .score-of { font-size: .88rem; color: #8A8098; margin-top: 6px; }
+    .predikat { display: inline-block; margin-top: 18px; font-size: 1rem; font-weight: 600; padding: 7px 22px; border-radius: 99px; border: 1.5px solid rgba(255,255,255,.15); }
+    .divider { width: 48px; height: 2px; background: rgba(255,255,255,.1); margin: 24px auto; }
+    .summary-row { display: flex; justify-content: center; gap: 36px; flex-wrap: wrap; margin-bottom: 30px; }
+    .stat .val { font-size: 1.65rem; font-weight: 700; }
+    .stat .val.g { color: #7DCFAA; }
+    .stat .val.r { color: #E07878; }
+    .stat .lbl { font-size: .75rem; color: #8A8098; margin-top: 3px; }
+    .kunci-title { font-family: 'Playfair Display', serif; font-size: 1.22rem; margin-bottom: 18px; }
+    .kunci-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(270px,1fr)); gap: 10px; text-align: left; }
+    .kunci-item { background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.09); border-radius: 8px; padding: 12px 14px; font-size: .84rem; line-height: 1.55; }
+    .kunci-item.ok { border-color: rgba(184,158,236,.25); }
+    .ki-no { color: #B89EEC; font-weight: 700; margin-bottom: 4px; font-size: .8rem; }
+    .ki-ans { color: #7DCFAA; font-weight: 600; }
+    .ki-your { color: #E07878; font-size: .8rem; margin-top: 3px; }
+    .ki-explain { color: #8A8098; font-size: .78rem; margin-top: 4px; font-style: italic; }
+
+    #retry-btn {
+      margin-top: 28px; font-family: 'DM Sans', sans-serif; font-size: .92rem; font-weight: 600;
+      background: transparent; color: #EDE8F5; border: 1.5px solid rgba(255,255,255,.22);
+      padding: 12px 36px; border-radius: 8px; cursor: pointer; transition: all .2s;
+    }
+    #retry-btn:hover { border-color: rgba(255,255,255,.6); background: rgba(255,255,255,.06); }
+
+    @media (max-width: 500px) { .question-card { padding: 22px 16px; } #hasil { padding: 32px 16px; } }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="hanzi-deco">时间</div>
+  <div class="label">SMA &middot; Kelas XI &middot; Bahasa Mandarin</div>
+  <h1>Kuis Jam &amp; Waktu (时间)</h1>
+  <p class="sub">Menyatakan Jam, Menit &amp; Waktu Sehari-hari dalam Bahasa Mandarin &mdash; 20 soal</p>
+  <div class="difficulty">&#9888; Tingkat Kesulitan: Dasar–Menengah</div>
+</header>
+<div id="progress-wrap">
+  <div id="progress-bar"></div>
+  <div id="progress-count">0 / 20 dijawab</div>
+</div>
+
+<div class="container">
+  <div id="quiz-form"></div>
+  <div id="btn-wrap">
+    <button id="submit-btn">Kirim Jawaban</button>
+    <div id="warn-msg">&#9888; Masih ada soal yang belum dijawab. Lengkapi semua jawaban terlebih dahulu.</div>
+  </div>
+  <div id="hasil"></div>
+</div>
+
+<script>
+const questions = [
+  {
+    topic: "Kata Kunci Waktu",
+    diff: "medium",
+    q: 'Dalam bahasa Mandarin, kata untuk menyatakan "jam" (satuan waktu) adalah …<span class="hanzi">____ 点</span><span class="pinyin">____ diǎn</span>',
+    note: "Pilih kata yang digunakan sebagai penanda satuan jam.",
+    opts: [
+      "分 (fēn) — menit",
+      "点 (diǎn) — jam/pukul",
+      "秒 (miǎo) — detik",
+      "刻 (kè) — seperempat jam"
+    ],
+    ans: 1,
+    explain: "点 (diǎn) digunakan untuk menyatakan jam/pukul. Contoh: 三点 (sān diǎn) = pukul 3. Untuk menit digunakan 分 (fēn), untuk detik 秒 (miǎo), dan 刻 (kè) = 15 menit (seperempat jam)."
+  },
+  {
+    topic: "Membaca Jam",
+    diff: "medium",
+    q: 'Bagaimana cara membaca pukul 9:00 dalam bahasa Mandarin?<div class="clock-display">9:00</div>',
+    note: "",
+    opts: [
+      "九时 (jiǔ shí)",
+      "九点 (jiǔ diǎn)",
+      "九分 (jiǔ fēn)",
+      "九刻 (jiǔ kè)"
+    ],
+    ans: 1,
+    explain: "9:00 = 九点 (jiǔ diǎn). Pola dasar: angka + 点. 九 (jiǔ) = 9, 点 (diǎn) = jam/pukul. Dalam percakapan formal bisa ditambah 整 (zhěng): 九点整 = tepat pukul 9."
+  },
+  {
+    topic: "Membaca Jam",
+    diff: "medium",
+    q: 'Bagaimana cara membaca pukul 3:30 dalam bahasa Mandarin?<div class="clock-display">3:30</div>',
+    note: "",
+    opts: [
+      "三点三十分 (sān diǎn sānshí fēn)",
+      "三点半 (sān diǎn bàn)",
+      "Keduanya A dan B benar",
+      "三十三分 (sānshísān fēn)"
+    ],
+    ans: 2,
+    explain: "3:30 bisa dinyatakan dua cara: (1) 三点三十分 (sān diǎn sānshí fēn) — formal, (2) 三点半 (sān diǎn bàn) — informal/sehari-hari. 半 (bàn) = setengah. Keduanya benar dan sering digunakan."
+  },
+  {
+    topic: "Membaca Jam",
+    diff: "medium",
+    q: 'Bagaimana cara membaca pukul 7:15 dalam bahasa Mandarin?<div class="clock-display">7:15</div>',
+    note: "",
+    opts: [
+      "七点一刻 (qī diǎn yī kè)",
+      "七点十五 (qī diǎn shíwǔ)",
+      "Keduanya A dan B benar",
+      "七刻 (qī kè)"
+    ],
+    ans: 2,
+    explain: "7:15 bisa dinyatakan: (1) 七点一刻 (qī diǎn yī kè) — satu seperempat jam, (2) 七点十五分 (qī diǎn shíwǔ fēn) — formal. 一刻 (yī kè) = 15 menit. Keduanya benar dalam percakapan sehari-hari."
+  },
+  {
+    topic: "Membaca Jam",
+    diff: "medium",
+    q: 'Bagaimana cara membaca pukul 10:45 dalam bahasa Mandarin?<div class="clock-display">10:45</div>',
+    note: "",
+    opts: [
+      "十点四十五分 (shí diǎn sìshíwǔ fēn)",
+      "差一刻十一点 (chà yī kè shíyī diǎn)",
+      "Keduanya A dan B benar",
+      "四十五点 (sìshíwǔ diǎn)"
+    ],
+    ans: 2,
+    explain: "10:45 bisa dinyatakan: (1) 十点四十五分 (langsung), (2) 差一刻十一点 (chà yī kè shíyī diǎn) = 'kurang seperempat jam pukul 11'. 差 (chà) = kurang/selisih. Ekspresi 'kurang' ini umum dalam bahasa lisan."
+  },
+  {
+    topic: "Membaca Jam",
+    diff: "medium",
+    q: 'Bagaimana cara membaca pukul 12:05 dalam bahasa Mandarin?<div class="clock-display">12:05</div>',
+    note: "",
+    opts: [
+      "十二点零五分 (shí'èr diǎn líng wǔ fēn)",
+      "十二点五分 (shí'èr diǎn wǔ fēn)",
+      "十二点五 (shí'èr diǎn wǔ)",
+      "零五点十二 (líng wǔ diǎn shí'èr)"
+    ],
+    ans: 0,
+    explain: "Ketika menit kurang dari 10, wajib menggunakan 零 (líng) sebelum angka satuannya: 十二点零五分. Jika tidak ada 零, 十二点五分 bisa diartikan 12:50 (五十分). 零 berfungsi sebagai 'nol' penghubung."
+  },
+  {
+    topic: "Waktu Sehari-hari",
+    diff: "medium",
+    q: 'Apa arti dari ungkapan berikut?<span class="hanzi">上午</span><span class="pinyin">shàngwǔ</span>',
+    note: "",
+    opts: [
+      "Sore hari (12:00–18:00)",
+      "Pagi hari / sebelum tengah hari (sekitar 06:00–12:00)",
+      "Malam hari (setelah 18:00)",
+      "Tengah malam"
+    ],
+    ans: 1,
+    explain: "上午 (shàngwǔ) = pagi hari / AM (sebelum tengah hari). 上 (shàng) = atas/sebelum, 午 (wǔ) = tengah hari. Lawannya: 下午 (xiàwǔ) = sore/PM (setelah tengah hari). 中午 (zhōngwǔ) = tengah hari."
+  },
+  {
+    topic: "Waktu Sehari-hari",
+    diff: "medium",
+    q: 'Apa arti dari ungkapan berikut?<span class="hanzi">晚上</span><span class="pinyin">wǎnshang</span>',
+    note: "",
+    opts: [
+      "Pagi hari",
+      "Siang hari",
+      "Sore hari",
+      "Malam hari"
+    ],
+    ans: 3,
+    explain: "晚上 (wǎnshang) = malam hari. 晚 (wǎn) = terlambat/malam, 上 (shang) = di atas (sufiks waktu). Urutan bagian hari: 早上 (zǎoshang)=pagi subuh, 上午=pagi, 中午=siang, 下午=sore, 晚上=malam."
+  },
+  {
+    topic: "Waktu Sehari-hari",
+    diff: "medium",
+    q: 'Seseorang mengatakan: 现在是下午三点半。(Xiànzài shì xiàwǔ sān diǎn bàn.) Artinya sekarang pukul …',
+    note: "",
+    opts: ["03:30 AM (dini hari)", "15:30 / pukul setengah empat sore", "13:30 / pukul setengah dua siang", "03:00 PM"],
+    ans: 1,
+    explain: "下午 (xiàwǔ) = sore/PM, 三点 (sān diǎn) = pukul 3, 半 (bàn) = setengah. Jadi 下午三点半 = 15:30 (pukul setengah empat sore). 现在 (xiànzài) = sekarang, 是 (shì) = adalah."
+  },
+  {
+    topic: "Waktu Sehari-hari",
+    diff: "medium",
+    q: 'Bagaimana cara menanyakan jam berapa sekarang dalam bahasa Mandarin?',
+    note: "",
+    opts: [
+      "今天几号？(Jīntiān jǐ hào?)",
+      "现在几点？(Xiànzài jǐ diǎn?)",
+      "你几岁？(Nǐ jǐ suì?)",
+      "几分钟？(Jǐ fēnzhōng?)"
+    ],
+    ans: 1,
+    explain: "现在几点？(Xiànzài jǐ diǎn?) = Sekarang pukul berapa? 现在 = sekarang, 几 (jǐ) = berapa (untuk angka kecil), 点 = jam. Pertanyaan lain: 今天几号 = tanggal berapa hari ini, 你几岁 = kamu berapa tahun."
+  },
+  {
+    topic: "Durasi Waktu",
+    diff: "medium",
+    q: 'Untuk menyatakan durasi waktu "2 jam" (bukan "pukul 2"), ungkapan yang benar adalah …',
+    note: "",
+    opts: [
+      "两点 (liǎng diǎn)",
+      "两个小时 (liǎng gè xiǎoshí)",
+      "二点 (èr diǎn)",
+      "两时 (liǎng shí)"
+    ],
+    ans: 1,
+    explain: "两个小时 (liǎng gè xiǎoshí) = selama 2 jam. 小时 (xiǎoshí) = jam sebagai durasi. 两点 = pukul 2 (titik waktu). Perbedaan penting: 点/时 = pukul (titik waktu) vs 个小时 = selama ... jam (durasi)."
+  },
+  {
+    topic: "Durasi Waktu",
+    diff: "medium",
+    q: 'Bagaimana cara menyatakan "30 menit" sebagai durasi waktu dalam bahasa Mandarin?',
+    note: "",
+    opts: [
+      "三十点 (sānshí diǎn)",
+      "半点 (bàn diǎn)",
+      "三十分钟 (sānshí fēnzhōng)",
+      "三十时 (sānshí shí)"
+    ],
+    ans: 2,
+    explain: "三十分钟 (sānshí fēnzhōng) = 30 menit (durasi). 分钟 (fēnzhōng) = menit sebagai durasi. Bandingkan: 三点三十分 = pukul 3:30 (titik waktu). 分钟 digunakan untuk durasi, sedangkan 分 saja digunakan saat membaca jam."
+  },
+  {
+    topic: "Kalimat dengan Waktu",
+    diff: "medium",
+    q: 'Kalimat manakah yang berarti "Saya pergi ke sekolah pukul 7 pagi"?',
+    note: "",
+    opts: [
+      "我七点上午去学校。(Wǒ qī diǎn shàngwǔ qù xuéxiào.)",
+      "我上午七点去学校。(Wǒ shàngwǔ qī diǎn qù xuéxiào.)",
+      "我去学校上午七点。(Wǒ qù xuéxiào shàngwǔ qī diǎn.)",
+      "上午我七点学校去。(Shàngwǔ wǒ qī diǎn xuéxiào qù.)"
+    ],
+    ans: 1,
+    explain: "Urutan yang benar: Keterangan waktu besar dulu → kecil: 上午七点 (pagi + pukul 7), bukan 七点上午. Pola kalimat: Subjek + waktu besar + waktu kecil + kata kerja + objek. Jadi: 我上午七点去学校 adalah yang paling natural."
+  },
+  {
+    topic: "Kalimat dengan Waktu",
+    diff: "medium",
+    q: 'Seseorang berkata: 我们明天上午十点见面。(Wǒmen míngtiān shàngwǔ shí diǎn jiànmiàn.) Arti kalimat ini adalah …',
+    note: "",
+    opts: [
+      "Kita bertemu kemarin pukul 10 malam",
+      "Kita bertemu besok pukul 10 pagi",
+      "Kita bertemu hari ini pukul 10 siang",
+      "Kita bertemu lusa pukul 10 pagi"
+    ],
+    ans: 1,
+    explain: "明天 = besok, 上午 = pagi, 十点 = pukul 10, 见面 (jiànmiàn) = bertemu/ketemuan. Kalimat lengkap: Kita (wǒmen) besok pagi pukul 10 bertemu. Struktur waktu dari besar ke kecil: hari → bagian hari → jam."
+  },
+  {
+    topic: "Kalimat dengan Waktu",
+    diff: "hard",
+    q: 'Perbedaan penggunaan 从……到…… (cóng...dào...) dalam konteks waktu adalah untuk menyatakan …',
+    note: "",
+    opts: [
+      "Waktu yang sangat lama / durasi lebih dari sehari",
+      "Rentang waktu dari titik awal hingga titik akhir",
+      "Waktu yang sudah lewat (lampau)",
+      "Waktu yang belum pasti / perkiraan"
+    ],
+    ans: 1,
+    explain: "从……到…… (cóng...dào...) = dari ... sampai ... Digunakan untuk menyatakan rentang waktu. Contoh: 从早上八点到下午五点 (cóng zǎoshang bā diǎn dào xiàwǔ wǔ diǎn) = dari pukul 8 pagi sampai pukul 5 sore. Bisa juga untuk tempat: 从北京到上海 = dari Beijing ke Shanghai."
+  },
+  {
+    topic: "Jadwal & Aktivitas",
+    diff: "medium",
+    q: 'Kalimat 我每天七点起床。(Wǒ měitiān qī diǎn qǐchuáng.) berarti …',
+    note: "",
+    opts: [
+      "Saya bangun tidur jam 7 kemarin",
+      "Saya bangun tidur jam 7 setiap hari",
+      "Saya tidur jam 7 setiap malam",
+      "Saya ingin bangun jam 7 besok"
+    ],
+    ans: 1,
+    explain: "每天 (měitiān) = setiap hari, 七点 = pukul 7, 起床 (qǐchuáng) = bangun tidur. 每 (měi) = setiap/tiap adalah kunci kebiasaan rutin. Aktivitas harian lain: 睡觉 (shuìjiào) = tidur, 吃饭 (chīfàn) = makan, 上学 (shàngxué) = pergi ke sekolah."
+  },
+  {
+    topic: "Jadwal & Aktivitas",
+    diff: "medium",
+    q: 'Kalimat 我们的课从八点到十二点。(Wǒmen de kè cóng bā diǎn dào shí'èr diǎn.) berarti …',
+    note: "",
+    opts: [
+      "Pelajaran kita dari pukul 8 sampai pukul 12",
+      "Kita belajar selama 8 jam",
+      "Kelas dimulai pukul 12 dan selesai pukul 8",
+      "Kita punya 8 pelajaran sampai pukul 12"
+    ],
+    ans: 0,
+    explain: "从八点到十二点 = dari pukul 8 sampai pukul 12. 课 (kè) = pelajaran/kelas. Kalimat ini menyatakan rentang waktu pelajaran: mulai jam 8, selesai jam 12. Total durasi bisa dihitung: 十二点 - 八点 = 四个小时 (4 jam)."
+  },
+  {
+    topic: "Jadwal & Aktivitas",
+    diff: "hard",
+    q: 'Apa perbedaan antara 点 (diǎn) dan 时 (shí) dalam konteks menyatakan waktu?',
+    note: "",
+    opts: [
+      "Keduanya identik dan selalu bisa saling menggantikan",
+      "点 lebih umum digunakan dalam percakapan sehari-hari; 时 lebih formal/tertulis, juga bermakna 'saat/ketika'",
+      "点 untuk jam genap, 时 untuk jam ganjil",
+      "点 untuk pagi hari, 时 untuk malam hari"
+    ],
+    ans: 1,
+    explain: "点 (diǎn) lebih dominan dalam percakapan: 两点 (liǎng diǎn). 时 (shí) lebih formal dan juga bisa berarti 'saat/ketika': 上课时 (shàngkè shí) = saat pelajaran berlangsung. Dalam jadwal resmi, 时 sering dipakai: 班机于14时30分起飞 = pesawat take off pukul 14.30."
+  },
+  {
+    topic: "Membaca Jadwal",
+    diff: "hard",
+    q: 'Di sebuah jadwal tertulis: 语文课：周一、三、五 08:00–09:40。Informasi apa yang bisa dibaca dari jadwal ini?',
+    note: "",
+    opts: [
+      "Pelajaran Bahasa Mandarin pada Senin, Rabu, Jumat pukul 08:00 sampai 09:40",
+      "Pelajaran Matematika pada Selasa, Kamis, Sabtu pukul 08:00 sampai 09:40",
+      "Pelajaran Bahasa Mandarin pada Senin, Selasa, Rabu pukul 08:00 sampai 09:40",
+      "Pelajaran Bahasa Inggris pada Senin, Rabu, Jumat pukul 09:00 sampai 09:40"
+    ],
+    ans: 0,
+    explain: "语文 (yǔwén) = Bahasa Mandarin/Indonesia (mata pelajaran bahasa). 周一=Senin, 周三=Rabu, 周五=Jumat. 08:00–09:40 = pukul 8 sampai 9.40. Jadi: pelajaran Bahasa Mandarin diadakan hari Senin, Rabu, dan Jumat dari pukul 8 hingga 9:40."
+  },
+  {
+    topic: "Membaca Jadwal",
+    diff: "hard",
+    q: 'Seseorang mengatakan: 会议从下午两点开始，开了两个小时。几点结束？ (Rapat mulai pukul 2 sore, berlangsung selama 2 jam. Pukul berapa selesai?)',
+    note: "",
+    opts: [
+      "下午三点 (xiàwǔ sān diǎn) — pukul 15.00",
+      "下午四点 (xiàwǔ sì diǎn) — pukul 16.00",
+      "下午两点半 (xiàwǔ liǎng diǎn bàn) — pukul 14.30",
+      "晚上六点 (wǎnshang liù diǎn) — pukul 18.00"
+    ],
+    ans: 1,
+    explain: "下午两点 (14:00) + 两个小时 (2 jam) = 下午四点 (16:00). Soal ini menggabungkan titik waktu (pukul 2) + durasi (2 jam) untuk menghitung waktu selesai. Keterampilan ini penting untuk memahami percakapan sehari-hari tentang jadwal."
+  }
+];
+
+const letters = ['A','B','C','D'];
+const form = document.getElementById('quiz-form');
+const bar  = document.getElementById('progress-bar');
+const countEl = document.getElementById('progress-count');
+const warn = document.getElementById('warn-msg');
+const hasilDiv = document.getElementById('hasil');
+const submitBtn = document.getElementById('submit-btn');
+
+questions.forEach((item, i) => {
+  const card = document.createElement('div');
+  card.className = 'question-card';
+  card.id = 'card-' + i;
+  const optsHTML = item.opts.map((opt, j) => `
+    <label class="option-label" id="lbl-${i}-${j}">
+      <input type="radio" name="q${i}" value="${j}" />
+      <span class="opt-letter">${letters[j]}</span>
+      <span class="opt-text">${opt}</span>
+    </label>`).join('');
+  const diffLabel = item.diff === 'hard'
+    ? '<span class="q-diff hard">Sulit</span>'
+    : '<span class="q-diff medium">Sedang</span>';
+  card.innerHTML = `
+    <div class="q-meta">
+      <span class="q-num">${String(i+1).padStart(2,'0')}.</span>
+      <span class="q-tag">${item.topic}</span>
+      ${diffLabel}
+    </div>
+    <p class="q-text">${item.q}</p>
+    ${item.note ? '<p class="q-note">'+item.note+'</p>' : ''}
+    <div class="options">${optsHTML}</div>`;
+  form.appendChild(card);
+});
+
+function updateProgress() {
+  let n = 0;
+  questions.forEach((_,i) => { if (document.querySelector('input[name="q'+i+'"]:checked')) n++; });
+  bar.style.width = (n / questions.length * 100) + '%';
+  countEl.textContent = n + ' / ' + questions.length + ' dijawab';
+}
+form.addEventListener('change', updateProgress);
+
+submitBtn.addEventListener('click', () => {
+  const unanswered = [];
+  questions.forEach((_,i) => {
+    const card = document.getElementById('card-'+i);
+    if (!document.querySelector('input[name="q'+i+'"]:checked')) {
+      unanswered.push(i); card.classList.add('unanswered');
+    } else { card.classList.remove('unanswered'); }
+  });
+
+  if (unanswered.length > 0) {
+    warn.style.display = 'block';
+    document.getElementById('card-'+unanswered[0]).scrollIntoView({ behavior:'smooth', block:'center' });
+    return;
+  }
+  warn.style.display = 'none';
+  submitBtn.disabled = true;
+  form.querySelectorAll('input[type="radio"]').forEach(r => r.disabled = true);
+
+  let correct = 0;
+  const details = [];
+  questions.forEach((item, i) => {
+    const sel = parseInt(document.querySelector('input[name="q'+i+'"]:checked').value);
+    const ok = sel === item.ans;
+    if (ok) correct++;
+    for (let j = 0; j < item.opts.length; j++) {
+      const lbl = document.getElementById('lbl-'+i+'-'+j);
+      if (j === item.ans) lbl.classList.add('correct');
+      else if (j === sel && !ok) lbl.classList.add('wrong');
+    }
+    details.push({ q:i+1, topic:item.topic, ans:item.ans, sel, ok,
+      ansText:item.opts[item.ans], selText:item.opts[sel], explain:item.explain });
+  });
+
+  const score = Math.round(correct / questions.length * 100);
+  let pred, col;
+  if (score >= 90)      { pred = '&#127942; Luar Biasa';              col = '#B89EEC'; }
+  else if (score >= 75) { pred = '&#9733; Sangat Baik';               col = '#A8D08D'; }
+  else if (score >= 60) { pred = '&#128218; Baik';                    col = '#F0C040'; }
+  else if (score >= 40) { pred = '&#128214; Cukup — Terus Belajar';   col = '#E09050'; }
+  else                  { pred = '&#128172; Jangan Menyerah!';        col = '#E07878'; }
+
+  const kunciHTML = details.map(d => `
+    <div class="kunci-item ${d.ok?'ok':''}">
+      <div class="ki-no">Soal ${d.q} &mdash; ${d.topic}</div>
+      <div class="ki-ans">&#10003; Benar: ${letters[d.ans]}. ${d.ansText}</div>
+      ${!d.ok ? '<div class="ki-your">&#10007; Jawaban kamu: '+letters[d.sel]+'. '+d.selText+'</div>' : ''}
+      <div class="ki-explain">${d.explain}</div>
+    </div>`).join('');
+
+  hasilDiv.innerHTML = `
+    <div class="score-label">Nilai Kamu</div>
+    <div class="score-num">${score}</div>
+    <div class="score-of">${correct} dari ${questions.length} soal benar</div>
+    <div class="predikat" style="border-color:${col}44;color:${col}">${pred}</div>
+    <div class="divider"></div>
+    <div class="summary-row">
+      <div class="stat"><div class="val g">${correct}</div><div class="lbl">Benar</div></div>
+      <div class="stat"><div class="val r">${questions.length-correct}</div><div class="lbl">Salah</div></div>
+      <div class="stat"><div class="val">${questions.length}</div><div class="lbl">Total</div></div>
+    </div>
+    <div class="kunci-title">Kunci Jawaban &amp; Penjelasan</div>
+    <div class="kunci-grid">${kunciHTML}</div>
+    <button id="retry-btn">&#128260; Coba Lagi</button>`;
+  hasilDiv.style.display = 'block';
+  hasilDiv.scrollIntoView({ behavior:'smooth', block:'start' });
+  document.getElementById('retry-btn').addEventListener('click', () => location.reload());
+});
+</script>
+</body>
+</html>

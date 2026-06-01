@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Kuis Bahasa Mandarin — Kosakata HSK 1 — SMA Kelas XI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,600&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #F0EBE3; --surface: #FDFAF6; --ink: #1A1614;
+      --muted: #7A7068; --accent: #C0392B; --border: #DDD0C0;
+      --correct: #2B5E3E; --wrong: #8B2020; --radius: 12px;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--ink); min-height: 100vh; padding: 0 0 80px; }
+
+    header {
+      background: var(--ink); color: #F0EBE3;
+      padding: 52px 24px 44px; text-align: center; position: relative; overflow: hidden;
+    }
+    header::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 70% 50%, rgba(192,57,43,.2) 0%, transparent 65%),
+                  radial-gradient(ellipse at 20% 80%, rgba(192,57,43,.12) 0%, transparent 55%);
+    }
+    header .label {
+      position: relative; display: inline-block; font-size: .68rem; font-weight: 600;
+      letter-spacing: .22em; text-transform: uppercase; color: #E8A87C;
+      background: rgba(232,168,124,.1); border: 1px solid rgba(232,168,124,.3);
+      padding: 5px 16px; border-radius: 99px; margin-bottom: 18px;
+    }
+    header h1 {
+      position: relative;
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(1.9rem, 5vw, 3rem); line-height: 1.18;
+    }
+    header .hanzi-deco {
+      position: absolute; right: 5%; top: 50%; transform: translateY(-50%);
+      font-size: 6rem; opacity: .06; user-select: none; line-height: 1;
+    }
+    header .sub {
+      position: relative; margin-top: 10px; color: #A09080; font-size: .9rem;
+    }
+    header .difficulty {
+      position: relative; display: inline-block; margin-top: 14px;
+      font-size: .78rem; font-weight: 600; color: #E8A87C;
+      background: rgba(232,168,124,.08); border: 1px solid rgba(232,168,124,.25);
+      padding: 4px 14px; border-radius: 99px; letter-spacing: .06em;
+    }
+
+    #progress-wrap { position: sticky; top: 0; z-index: 10; background: var(--ink); }
+    #progress-bar { height: 3px; background: var(--accent); width: 0%; transition: width .35s ease; }
+    #progress-count {
+      text-align: right; padding: 4px 16px 5px; font-size: .7rem;
+      color: #7A7068; background: var(--ink); letter-spacing: .05em;
+    }
+
+    .container { max-width: 780px; margin: 0 auto; padding: 40px 20px 0; }
+
+    .question-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 32px 28px; margin-bottom: 18px;
+      transition: box-shadow .2s;
+    }
+    .question-card:hover { box-shadow: 0 4px 22px rgba(0,0,0,.07); }
+    .question-card.unanswered { border-color: #C8962A; box-shadow: 0 0 0 3px rgba(200,150,42,.14); }
+
+    .q-meta { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+    .q-num { font-family: 'Playfair Display', serif; font-size: 1.35rem; font-weight: 700; color: var(--accent); min-width: 30px; }
+    .q-tag {
+      font-size: .68rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase;
+      color: var(--muted); background: var(--bg); border: 1px solid var(--border);
+      padding: 3px 10px; border-radius: 99px;
+    }
+    .q-diff {
+      font-size: .65rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+      padding: 3px 9px; border-radius: 99px;
+    }
+    .q-diff.hard { color: #8B3A2A; background: rgba(139,58,42,.08); border: 1px solid rgba(139,58,42,.2); }
+    .q-diff.medium { color: #7A5A1A; background: rgba(122,90,26,.08); border: 1px solid rgba(122,90,26,.2); }
+
+    .q-text { font-size: 1rem; line-height: 1.72; font-weight: 500; margin-bottom: 20px; }
+    .q-text .hanzi { font-size: 1.8rem; display: block; text-align: center; margin: 10px 0 4px; letter-spacing: .1em; color: var(--accent); }
+    .q-text .pinyin { display: block; text-align: center; font-size: .85rem; color: var(--muted); margin-bottom: 10px; font-style: italic; }
+    .q-note { font-size: .82rem; color: var(--muted); font-style: italic; margin-bottom: 16px; margin-top: -10px; }
+
+    .options { display: flex; flex-direction: column; gap: 9px; }
+    .option-label {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 12px 16px; border: 1.5px solid var(--border); border-radius: 8px;
+      cursor: pointer; transition: border-color .15s, background .15s; user-select: none;
+    }
+    .option-label:hover { border-color: var(--accent); background: #FBF4EE; }
+    .option-label input[type="radio"] { display: none; }
+    .opt-letter {
+      flex-shrink: 0; width: 26px; height: 26px; border-radius: 50%;
+      background: var(--bg); border: 1.5px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: .74rem; font-weight: 700; color: var(--muted);
+      transition: all .15s; margin-top: 1px;
+    }
+    .option-label:has(input:checked) { border-color: var(--accent); background: #FBF4EE; }
+    .option-label:has(input:checked) .opt-letter { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .opt-text { font-size: .92rem; line-height: 1.55; padding-top: 2px; }
+
+    .option-label.correct { border-color: var(--correct); background: #EAF3EE; }
+    .option-label.correct .opt-letter { background: var(--correct); border-color: var(--correct); color: #fff; }
+    .option-label.wrong { border-color: var(--wrong); background: #FAF0EE; }
+    .option-label.wrong .opt-letter { background: var(--wrong); border-color: var(--wrong); color: #fff; }
+
+    #btn-wrap { text-align: center; margin-top: 40px; }
+    #submit-btn {
+      font-family: 'DM Sans', sans-serif; font-size: 1rem; font-weight: 600;
+      background: var(--ink); color: #F0EBE3; border: none;
+      padding: 16px 56px; border-radius: 8px; cursor: pointer;
+      transition: background .2s, transform .1s; letter-spacing: .04em;
+    }
+    #submit-btn:hover { background: #2A2420; transform: translateY(-1px); }
+    #submit-btn:active { transform: translateY(0); }
+    #submit-btn:disabled { opacity: .4; cursor: not-allowed; }
+
+    #warn-msg {
+      display: none; margin-top: 12px; font-size: .86rem; color: #8B6200;
+      background: #FFF8E6; border: 1px solid #DEB84A; border-radius: 8px;
+      padding: 10px 18px; text-align: center;
+    }
+
+    #hasil {
+      display: none; margin-top: 44px; background: var(--ink); color: #F0EBE3;
+      border-radius: var(--radius); padding: 44px 32px; text-align: center;
+      animation: fadeUp .5s ease both;
+    }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }
+    .score-label { font-size: .72rem; letter-spacing: .2em; text-transform: uppercase; color: #9A8878; margin-bottom: 10px; }
+    .score-num { font-family: 'Playfair Display', serif; font-size: clamp(3.5rem,10vw,5.5rem); font-weight: 700; line-height: 1; color: var(--accent); }
+    .score-of { font-size: .88rem; color: #9A8878; margin-top: 6px; }
+    .predikat { display: inline-block; margin-top: 18px; font-size: 1rem; font-weight: 600; padding: 7px 22px; border-radius: 99px; border: 1.5px solid rgba(255,255,255,.15); }
+    .divider { width: 48px; height: 2px; background: rgba(255,255,255,.1); margin: 24px auto; }
+    .summary-row { display: flex; justify-content: center; gap: 36px; flex-wrap: wrap; margin-bottom: 30px; }
+    .stat .val { font-size: 1.65rem; font-weight: 700; }
+    .stat .val.g { color: #7DCFAA; }
+    .stat .val.r { color: #E07878; }
+    .stat .lbl { font-size: .75rem; color: #9A8878; margin-top: 3px; }
+    .kunci-title { font-family: 'Playfair Display', serif; font-size: 1.22rem; margin-bottom: 18px; }
+    .kunci-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(270px,1fr)); gap: 10px; text-align: left; }
+    .kunci-item { background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.09); border-radius: 8px; padding: 12px 14px; font-size: .84rem; line-height: 1.55; }
+    .kunci-item.ok { border-color: rgba(125,207,170,.2); }
+    .ki-no { color: #E8A87C; font-weight: 700; margin-bottom: 4px; font-size: .8rem; }
+    .ki-ans { color: #7DCFAA; font-weight: 600; }
+    .ki-your { color: #E07878; font-size: .8rem; margin-top: 3px; }
+    .ki-explain { color: #9A8878; font-size: .78rem; margin-top: 4px; font-style: italic; }
+
+    #retry-btn {
+      margin-top: 28px; font-family: 'DM Sans', sans-serif; font-size: .92rem; font-weight: 600;
+      background: transparent; color: #F0EBE3; border: 1.5px solid rgba(255,255,255,.22);
+      padding: 12px 36px; border-radius: 8px; cursor: pointer; transition: all .2s;
+    }
+    #retry-btn:hover { border-color: rgba(255,255,255,.6); background: rgba(255,255,255,.06); }
+
+    @media (max-width: 500px) { .question-card { padding: 22px 16px; } #hasil { padding: 32px 16px; } }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="hanzi-deco">中文</div>
+  <div class="label">SMA &middot; Kelas XI &middot; Bahasa Mandarin</div>
+  <h1>Kuis Kosakata HSK 1</h1>
+  <p class="sub">Pengenalan Kosakata Dasar Bahasa Mandarin &mdash; 20 soal pilihan ganda</p>
+  <div class="difficulty">&#9888; Tingkat Kesulitan: Dasar–Menengah</div>
+</header>
+<div id="progress-wrap">
+  <div id="progress-bar"></div>
+  <div id="progress-count">0 / 20 dijawab</div>
+</div>
+
+<div class="container">
+  <div id="quiz-form"></div>
+  <div id="btn-wrap">
+    <button id="submit-btn">Kirim Jawaban</button>
+    <div id="warn-msg">&#9888; Masih ada soal yang belum dijawab. Lengkapi semua jawaban terlebih dahulu.</div>
+  </div>
+  <div id="hasil"></div>
+</div>
+
+<script>
+const questions = [
+  {
+    topic: "Sapaan & Perkenalan",
+    diff: "medium",
+    q: 'Apa arti dari kata berikut?<span class="hanzi">你好</span><span class="pinyin">nǐ hǎo</span>',
+    note: "",
+    opts: ["Selamat tinggal", "Halo / Hai (sapaan umum)", "Terima kasih", "Permisi"],
+    ans: 1,
+    explain: "你好 (nǐ hǎo) adalah sapaan paling dasar dalam bahasa Mandarin, setara dengan 'Halo' atau 'Hai'. 你 (nǐ) = kamu, 好 (hǎo) = baik. Untuk yang lebih formal digunakan 您好 (nín hǎo)."
+  },
+  {
+    topic: "Sapaan & Perkenalan",
+    diff: "medium",
+    q: 'Apa arti dari kata berikut?<span class="hanzi">谢谢</span><span class="pinyin">xièxie</span>',
+    note: "",
+    opts: ["Maaf", "Tidak mau", "Terima kasih", "Selamat pagi"],
+    ans: 2,
+    explain: "谢谢 (xièxie) berarti 'terima kasih'. Jawaban yang umum adalah 不客气 (bú kèqi) = sama-sama / tidak perlu sungkan, atau 不谢 (bú xiè) = jangan berterima kasih."
+  },
+  {
+    topic: "Sapaan & Perkenalan",
+    diff: "medium",
+    q: 'Apa arti dari kata berikut?<span class="hanzi">再见</span><span class="pinyin">zàijiàn</span>',
+    note: "",
+    opts: ["Selamat datang", "Sampai jumpa / Selamat tinggal", "Selamat makan", "Selamat pagi"],
+    ans: 1,
+    explain: "再见 (zàijiàn) berarti 'sampai jumpa' atau 'selamat tinggal'. 再 (zài) = lagi, 见 (jiàn) = bertemu. Secara harfiah berarti 'sampai bertemu lagi'."
+  },
+  {
+    topic: "Angka",
+    diff: "medium",
+    q: 'Angka berapakah yang diwakili oleh karakter berikut?<span class="hanzi">七</span><span class="pinyin">qī</span>',
+    note: "",
+    opts: ["6", "8", "7", "9"],
+    ans: 2,
+    explain: "七 (qī) = 7. Urutan angka Mandarin: 一(1) 二(2) 三(3) 四(4) 五(5) 六(6) 七(7) 八(8) 九(9) 十(10). Angka HSK 1 mencakup 1–100."
+  },
+  {
+    topic: "Angka",
+    diff: "medium",
+    q: 'Bagaimana cara membaca angka <strong>15</strong> dalam bahasa Mandarin?',
+    note: "",
+    opts: ["五十 (wǔshí)", "一五 (yī wǔ)", "十五 (shíwǔ)", "五十一 (wǔshíyī)"],
+    ans: 2,
+    explain: "15 = 十五 (shíwǔ). Dalam bahasa Mandarin, angka 11–19 dibentuk dengan 十 (shí/10) + satuan. Jadi 11=十一, 12=十二, dst. 50 = 五十 (wǔshí), bukan 十五."
+  },
+  {
+    topic: "Waktu & Tanggal",
+    diff: "medium",
+    q: 'Apa arti dari kata berikut?<span class="hanzi">今天</span><span class="pinyin">jīntiān</span>',
+    note: "",
+    opts: ["Besok", "Kemarin", "Hari ini", "Minggu depan"],
+    ans: 2,
+    explain: "今天 (jīntiān) = hari ini. Kata waktu penting: 昨天 (zuótiān) = kemarin, 今天 (jīntiān) = hari ini, 明天 (míngtiān) = besok. 天 (tiān) berarti 'hari' atau 'langit'."
+  },
+  {
+    topic: "Waktu & Tanggal",
+    diff: "medium",
+    q: 'Apa arti dari kata berikut?<span class="hanzi">星期一</span><span class="pinyin">xīngqī yī</span>',
+    note: "",
+    opts: ["Sabtu", "Minggu", "Senin", "Jumat"],
+    ans: 2,
+    explain: "星期一 (xīngqī yī) = Senin. Dalam bahasa Mandarin: 星期一=Senin, 星期二=Selasa, 星期三=Rabu, 星期四=Kamis, 星期五=Jumat, 星期六=Sabtu, 星期天/日=Minggu."
+  },
+  {
+    topic: "Keluarga",
+    diff: "medium",
+    q: 'Apa arti dari kata berikut?<span class="hanzi">妈妈</span><span class="pinyin">māma</span>',
+    note: "",
+    opts: ["Ayah", "Kakak perempuan", "Ibu", "Nenek"],
+    ans: 2,
+    explain: "妈妈 (māma) = ibu. Anggota keluarga dasar HSK 1: 爸爸 (bàba)=ayah, 妈妈 (māma)=ibu, 哥哥 (gēge)=kakak laki-laki, 姐姐 (jiějie)=kakak perempuan, 弟弟 (dìdi)=adik laki-laki."
+  },
+  {
+    topic: "Keluarga",
+    diff: "medium",
+    q: 'Apa arti dari kata berikut?<span class="hanzi">朋友</span><span class="pinyin">péngyou</span>',
+    note: "",
+    opts: ["Guru", "Teman / Sahabat", "Dokter", "Murid"],
+    ans: 1,
+    explain: "朋友 (péngyou) = teman/sahabat. 朋 (péng) dan 友 (yǒu) keduanya berarti 'teman'. Ungkapan umum: 我的朋友 (wǒ de péngyou) = teman saya."
+  },
+  {
+    topic: "Benda Sehari-hari",
+    diff: "medium",
+    q: 'Apa arti dari kata berikut?<span class="hanzi">书</span><span class="pinyin">shū</span>',
+    note: "",
+    opts: ["Pensil", "Meja", "Buku", "Tas"],
+    ans: 2,
+    explain: "书 (shū) = buku. Kata terkait: 书包 (shūbāo) = tas buku/ransel, 书桌 (shūzhuō) = meja belajar, 教科书 (jiàokēshū) = buku pelajaran."
+  },
+  {
+    topic: "Benda Sehari-hari",
+    diff: "medium",
+    q: 'Apa arti dari kata berikut?<span class="hanzi">水</span><span class="pinyin">shuǐ</span>',
+    note: "",
+    opts: ["Api", "Tanah", "Udara", "Air"],
+    ans: 3,
+    explain: "水 (shuǐ) = air. Ini juga salah satu dari Lima Elemen (五行) dalam filosofi Tiongkok. Kata terkait: 水果 (shuǐguǒ) = buah-buahan, 喝水 (hē shuǐ) = minum air."
+  },
+  {
+    topic: "Makanan & Minuman",
+    diff: "medium",
+    q: 'Apa arti dari kata berikut?<span class="hanzi">米饭</span><span class="pinyin">mǐfàn</span>',
+    note: "",
+    opts: ["Mie", "Roti", "Nasi (matang)", "Sup"],
+    ans: 2,
+    explain: "米饭 (mǐfàn) = nasi matang. 米 (mǐ) = beras mentah, 饭 (fàn) = makanan/nasi matang. Kata 饭 sendiri bisa berarti 'makanan' secara umum, seperti 早饭=sarapan, 午饭=makan siang."
+  },
+  {
+    topic: "Makanan & Minuman",
+    diff: "medium",
+    q: 'Apa arti dari kata berikut?<span class="hanzi">茶</span><span class="pinyin">chá</span>',
+    note: "",
+    opts: ["Kopi", "Susu", "Teh", "Jus"],
+    ans: 2,
+    explain: "茶 (chá) = teh. Teh adalah minuman paling penting dalam budaya Tiongkok. Kata 'tea' dalam banyak bahasa Eropa (tea, thé, Tee) berasal dari dialek Min Nan (Hokkian): 茶 dibaca 'tê'."
+  },
+  {
+    topic: "Kata Kerja Dasar",
+    diff: "medium",
+    q: 'Apa arti dari kata berikut?<span class="hanzi">喜欢</span><span class="pinyin">xǐhuān</span>',
+    note: "",
+    opts: ["Membenci", "Takut", "Menyukai / Suka", "Mencari"],
+    ans: 2,
+    explain: "喜欢 (xǐhuān) = suka/menyukai. Contoh kalimat: 我喜欢学中文 (wǒ xǐhuān xué Zhōngwén) = Saya suka belajar bahasa Mandarin. 不喜欢 (bù xǐhuān) = tidak suka."
+  },
+  {
+    topic: "Kata Kerja Dasar",
+    diff: "medium",
+    q: 'Apa arti dari kata berikut?<span class="hanzi">学习</span><span class="pinyin">xuéxí</span>',
+    note: "",
+    opts: ["Bermain", "Belajar / Mempelajari", "Mengajar", "Membaca"],
+    ans: 1,
+    explain: "学习 (xuéxí) = belajar. 学 (xué) = belajar/mempelajari, 习 (xí) = berlatih/mengulang. Bersama keduanya berarti proses belajar yang lengkap: menerima ilmu dan mempraktikkannya."
+  },
+  {
+    topic: "Kata Sifat Dasar",
+    diff: "medium",
+    q: 'Apa arti dari kata berikut?<span class="hanzi">大</span><span class="pinyin">dà</span>',
+    note: "",
+    opts: ["Kecil", "Banyak", "Besar", "Panjang"],
+    ans: 2,
+    explain: "大 (dà) = besar. Lawannya adalah 小 (xiǎo) = kecil. 大 juga digunakan dalam nama kampus: 北京大学 (Běijīng Dàxué) = Universitas Beijing, karena 大学 (dàxué) = universitas."
+  },
+  {
+    topic: "Kata Sifat Dasar",
+    diff: "medium",
+    q: 'Apa arti dari kata berikut?<span class="hanzi">好吃</span><span class="pinyin">hǎochī</span>',
+    note: "",
+    opts: ["Lapar", "Kenyang", "Enak / Lezat (makanan)", "Pedas"],
+    ans: 2,
+    explain: "好吃 (hǎochī) = enak/lezat untuk makanan. 好 (hǎo) = baik/bagus, 吃 (chī) = makan. Pola yang sama: 好喝 (hǎohē) = enak untuk minuman, 好看 (hǎokàn) = bagus/cantik (untuk dilihat)."
+  },
+  {
+    topic: "Kata Ganti & Struktur Kalimat",
+    diff: "medium",
+    q: 'Apa arti dari kata berikut?<span class="hanzi">我们</span><span class="pinyin">wǒmen</span>',
+    note: "",
+    opts: ["Mereka", "Kamu semua", "Kami / Kita", "Dia"],
+    ans: 2,
+    explain: "我们 (wǒmen) = kami/kita. 我 (wǒ) = saya, 们 (men) adalah sufiks jamak untuk kata ganti orang. 你们 (nǐmen) = kalian, 他们 (tāmen) = mereka (laki-laki), 她们 (tāmen) = mereka (perempuan)."
+  },
+  {
+    topic: "Kata Ganti & Struktur Kalimat",
+    diff: "hard",
+    q: 'Dalam kalimat <span class="hanzi">我有一本书</span><span class="pinyin">wǒ yǒu yī běn shū</span>, kata 本 (běn) berfungsi sebagai …',
+    note: "",
+    opts: [
+      "Kata kerja utama yang berarti 'membaca'",
+      "Kata bilangan bantu (classifier) untuk buku",
+      "Kata sifat yang berarti 'tipis'",
+      "Kata keterangan yang berarti 'sudah'"
+    ],
+    ans: 1,
+    explain: "本 (běn) adalah 量词 (liàngcí) = classifier/kata bilangan bantu khusus untuk buku. Bahasa Mandarin menggunakan classifier berbeda untuk kategori benda yang berbeda: 张 (zhāng) untuk benda datar, 条 (tiáo) untuk benda panjang, dll. Kalimat ini = 'Saya punya satu buku'."
+  },
+  {
+    topic: "Kata Ganti & Struktur Kalimat",
+    diff: "hard",
+    q: 'Kalimat manakah yang benar untuk menyatakan "Saya tidak minum teh" dalam bahasa Mandarin?',
+    note: "",
+    opts: [
+      "我喝不茶 (wǒ hē bù chá)",
+      "我没喝茶 (wǒ méi hē chá) — hanya untuk masa lalu",
+      "我不喝茶 (wǒ bù hē chá)",
+      "我喝茶不 (wǒ hē chá bù)"
+    ],
+    ans: 2,
+    explain: "不 (bù) diletakkan SEBELUM kata kerja untuk menyatakan negasi kebiasaan/kemauan: 我不喝茶 = Saya tidak (biasa) minum teh. 没 (méi) digunakan untuk negasi lampau atau 有 (yǒu). Posisi negatif dalam Mandarin selalu sebelum predikat."
+  }
+];
+
+const letters = ['A','B','C','D'];
+const form = document.getElementById('quiz-form');
+const bar  = document.getElementById('progress-bar');
+const countEl = document.getElementById('progress-count');
+const warn = document.getElementById('warn-msg');
+const hasilDiv = document.getElementById('hasil');
+const submitBtn = document.getElementById('submit-btn');
+
+questions.forEach((item, i) => {
+  const card = document.createElement('div');
+  card.className = 'question-card';
+  card.id = 'card-' + i;
+  const optsHTML = item.opts.map((opt, j) => `
+    <label class="option-label" id="lbl-${i}-${j}">
+      <input type="radio" name="q${i}" value="${j}" />
+      <span class="opt-letter">${letters[j]}</span>
+      <span class="opt-text">${opt}</span>
+    </label>`).join('');
+  const diffLabel = item.diff === 'hard'
+    ? '<span class="q-diff hard">Sulit</span>'
+    : '<span class="q-diff medium">Sedang</span>';
+  card.innerHTML = `
+    <div class="q-meta">
+      <span class="q-num">${String(i+1).padStart(2,'0')}.</span>
+      <span class="q-tag">${item.topic}</span>
+      ${diffLabel}
+    </div>
+    <p class="q-text">${item.q}</p>
+    ${item.note ? '<p class="q-note">'+item.note+'</p>' : ''}
+    <div class="options">${optsHTML}</div>`;
+  form.appendChild(card);
+});
+
+function updateProgress() {
+  let n = 0;
+  questions.forEach((_,i) => { if (document.querySelector('input[name="q'+i+'"]:checked')) n++; });
+  bar.style.width = (n / questions.length * 100) + '%';
+  countEl.textContent = n + ' / ' + questions.length + ' dijawab';
+}
+form.addEventListener('change', updateProgress);
+
+submitBtn.addEventListener('click', () => {
+  const unanswered = [];
+  questions.forEach((_,i) => {
+    const card = document.getElementById('card-'+i);
+    if (!document.querySelector('input[name="q'+i+'"]:checked')) {
+      unanswered.push(i); card.classList.add('unanswered');
+    } else { card.classList.remove('unanswered'); }
+  });
+
+  if (unanswered.length > 0) {
+    warn.style.display = 'block';
+    document.getElementById('card-'+unanswered[0]).scrollIntoView({ behavior:'smooth', block:'center' });
+    return;
+  }
+  warn.style.display = 'none';
+  submitBtn.disabled = true;
+  form.querySelectorAll('input[type="radio"]').forEach(r => r.disabled = true);
+
+  let correct = 0;
+  const details = [];
+  questions.forEach((item, i) => {
+    const sel = parseInt(document.querySelector('input[name="q'+i+'"]:checked').value);
+    const ok = sel === item.ans;
+    if (ok) correct++;
+    for (let j = 0; j < item.opts.length; j++) {
+      const lbl = document.getElementById('lbl-'+i+'-'+j);
+      if (j === item.ans) lbl.classList.add('correct');
+      else if (j === sel && !ok) lbl.classList.add('wrong');
+    }
+    details.push({ q:i+1, topic:item.topic, ans:item.ans, sel, ok,
+      ansText:item.opts[item.ans], selText:item.opts[sel], explain:item.explain });
+  });
+
+  const score = Math.round(correct / questions.length * 100);
+  let pred, col;
+  if (score >= 90)      { pred = '&#127942; Luar Biasa';              col = '#E8A87C'; }
+  else if (score >= 75) { pred = '&#9733; Sangat Baik';               col = '#A8D08D'; }
+  else if (score >= 60) { pred = '&#128218; Baik';                    col = '#F0C040'; }
+  else if (score >= 40) { pred = '&#128214; Cukup — Terus Belajar';   col = '#E09050'; }
+  else                  { pred = '&#128172; Jangan Menyerah!';        col = '#E07878'; }
+
+  const kunciHTML = details.map(d => `
+    <div class="kunci-item ${d.ok?'ok':''}">
+      <div class="ki-no">Soal ${d.q} &mdash; ${d.topic}</div>
+      <div class="ki-ans">&#10003; Benar: ${letters[d.ans]}. ${d.ansText}</div>
+      ${!d.ok ? '<div class="ki-your">&#10007; Jawaban kamu: '+letters[d.sel]+'. '+d.selText+'</div>' : ''}
+      <div class="ki-explain">${d.explain}</div>
+    </div>`).join('');
+
+  hasilDiv.innerHTML = `
+    <div class="score-label">Nilai Kamu</div>
+    <div class="score-num">${score}</div>
+    <div class="score-of">${correct} dari ${questions.length} soal benar</div>
+    <div class="predikat" style="border-color:${col}44;color:${col}">${pred}</div>
+    <div class="divider"></div>
+    <div class="summary-row">
+      <div class="stat"><div class="val g">${correct}</div><div class="lbl">Benar</div></div>
+      <div class="stat"><div class="val r">${questions.length-correct}</div><div class="lbl">Salah</div></div>
+      <div class="stat"><div class="val">${questions.length}</div><div class="lbl">Total</div></div>
+    </div>
+    <div class="kunci-title">Kunci Jawaban &amp; Penjelasan</div>
+    <div class="kunci-grid">${kunciHTML}</div>
+    <button id="retry-btn">&#128260; Coba Lagi</button>`;
+  hasilDiv.style.display = 'block';
+  hasilDiv.scrollIntoView({ behavior:'smooth', block:'start' });
+  document.getElementById('retry-btn').addEventListener('click', () => location.reload());
+});
+</script>
+</body>
+</html>

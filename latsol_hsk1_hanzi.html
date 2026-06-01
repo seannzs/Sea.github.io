@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Latihan HSK 1 — Hanzi & Arti</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300&family=Noto+Serif+SC:wght@400;700;900&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --void:#080808;
+  --paper:#F4EFE6;
+  --red:#C8392B;
+  --gold:#D4A017;
+  --smoke:#1A1A1A;
+  --ash:#A09888;
+  --line:#2A2A2A;
+}
+html{scroll-behavior:smooth}
+body{background:var(--void);color:var(--paper);font-family:'Crimson Pro',Georgia,serif;min-height:100vh;overflow-x:hidden}
+
+/* HEADER */
+header{position:relative;padding:64px 28px 52px;text-align:center;border-bottom:1px solid var(--line);overflow:hidden}
+.hbg{
+  position:absolute;font-family:'Noto Serif SC',serif;font-size:20rem;font-weight:900;
+  color:rgba(200,57,43,.04);line-height:1;top:50%;left:50%;transform:translate(-50%,-52%);
+  pointer-events:none;user-select:none;transition:opacity .4s;
+}
+.pill{
+  display:inline-flex;align-items:center;gap:7px;
+  border:1px solid rgba(212,160,23,.35);padding:5px 16px;border-radius:99px;
+  font-size:.66rem;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--gold);margin-bottom:20px;font-weight:600;
+}
+h1{font-family:'Playfair Display',serif;font-size:clamp(2rem,7vw,3.8rem);font-weight:900;line-height:1.08;letter-spacing:-.02em}
+h1 .red{color:var(--red)}
+h1 .gold{font-family:'Noto Serif SC',serif;color:var(--gold)}
+.sub{margin-top:12px;font-size:1rem;color:var(--ash);font-style:italic;font-weight:300}
+
+/* RIBBON */
+#ribbon{
+  display:flex;position:sticky;top:0;z-index:50;
+  background:var(--void);border-bottom:1px solid var(--line);
+}
+.rc{
+  flex:1;text-align:center;padding:10px 0 8px;
+  border-right:1px solid var(--line);
+  font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ash);
+}
+.rc:last-child{border-right:none}
+.rv{display:block;font-family:'Playfair Display',serif;font-size:1.45rem;font-weight:700;color:var(--paper);margin-bottom:1px;transition:color .3s}
+.rv.g{color:#6EC49A}
+.rv.r{color:#E07070}
+.rv.gold{color:var(--gold)}
+#pbar-wrap{position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--line)}
+#pbar{height:2px;background:linear-gradient(90deg,var(--red),var(--gold));width:0%;transition:width .4s ease}
+
+/* MAIN */
+main{max-width:740px;margin:0 auto;padding:44px 16px 40px}
+
+/* CARD */
+.qcard{
+  position:relative;border:1px solid var(--line);border-radius:4px;
+  margin-bottom:18px;overflow:hidden;
+  animation:cardIn .4s ease both;
+}
+.qcard::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--line);transition:background .25s}
+.qcard.done::before{background:var(--gold)}
+.qcard.err{border-color:var(--red)!important;box-shadow:0 0 0 2px rgba(200,57,43,.18)}
+@keyframes cardIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+.qtop{display:flex;align-items:center;gap:10px;padding:14px 18px 0;flex-wrap:wrap}
+.qnum{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--red)}
+.qtag{font-size:.59rem;letter-spacing:.16em;text-transform:uppercase;color:var(--ash);border:1px solid var(--line);padding:2px 9px;border-radius:2px;font-weight:600}
+
+/* Hanzi display */
+.hz-wrap{display:flex;justify-content:center;align-items:center;padding:26px 18px 18px}
+.hz-big{font-family:'Noto Serif SC',serif;font-size:clamp(3.2rem,11vw,5rem);font-weight:700;color:var(--paper);line-height:1;text-align:center}
+.hz-py{font-size:.88rem;font-style:italic;color:var(--ash);text-align:center;margin-top:6px;font-weight:300}
+.divider{width:30px;height:1px;background:var(--line);margin:0 auto 16px}
+
+/* Arti display */
+.arti-wrap{padding:26px 18px 16px;text-align:center}
+.arti-label{font-size:.59rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ash);margin-bottom:8px;font-weight:600}
+.arti-text{font-family:'Playfair Display',serif;font-size:clamp(1.5rem,5vw,2.2rem);font-weight:700;color:var(--paper);line-height:1.2}
+.arti-sub{font-size:.84rem;font-style:italic;color:var(--ash);margin-top:5px;font-weight:300}
+
+/* OPTIONS */
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:1px;border-top:1px solid var(--line);background:var(--line)}
+.opt{
+  background:var(--void);padding:13px 14px;
+  display:flex;align-items:center;gap:10px;
+  cursor:pointer;transition:background .15s;user-select:none;position:relative;
+}
+.opt:hover{background:#0F0F0F}
+.opt input{display:none}
+.oletter{
+  width:22px;height:22px;border-radius:2px;border:1px solid var(--line);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.63rem;font-weight:700;color:var(--ash);flex-shrink:0;transition:all .15s;
+}
+.otext{font-size:.92rem;line-height:1.45;color:var(--paper);font-weight:300}
+.otext .zh{font-family:'Noto Serif SC',serif;font-size:1.1rem;display:block;color:rgba(244,239,230,.8)}
+.otext .py{font-size:.7rem;color:var(--ash);font-style:italic;display:block}
+.opt:has(input:checked) .oletter{background:var(--gold);border-color:var(--gold);color:var(--void)}
+.opt.is-correct{background:#071510}
+.opt.is-correct .oletter{background:#2D8A5E;border-color:#2D8A5E;color:#fff}
+.opt.is-correct .otext{color:#7DCFAA}
+.opt.is-correct::after{content:'✓';position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:.75rem;color:#2D8A5E;font-weight:700}
+.opt.is-wrong{background:#150707}
+.opt.is-wrong .oletter{background:#8B2020;border-color:#8B2020;color:#fff}
+.opt.is-wrong .otext{color:#E07070}
+.opt.is-wrong::after{content:'✗';position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:.75rem;color:#8B2020;font-weight:700}
+
+/* EXPLANATION */
+.qexp{display:none;border-top:1px solid var(--line);padding:13px 18px;font-size:.83rem;line-height:1.65;color:var(--ash);font-style:italic;background:#0C0C0C}
+.qexp.show{display:block;animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.qexp b{color:var(--gold);font-style:normal}
+
+/* SUBMIT */
+#sub-area{max-width:740px;margin:0 auto;padding:0 16px 80px;text-align:center}
+#sbtn{
+  font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;
+  letter-spacing:.08em;text-transform:uppercase;
+  background:transparent;color:var(--paper);
+  border:1px solid rgba(244,239,230,.25);
+  padding:16px 60px;border-radius:3px;cursor:pointer;
+  transition:all .25s;position:relative;overflow:hidden;
+}
+#sbtn::before{
+  content:'';position:absolute;inset:0;background:var(--red);
+  transform:scaleX(0);transform-origin:left;transition:transform .3s ease;z-index:-1;
+}
+#sbtn:hover{border-color:var(--red)}
+#sbtn:hover::before{transform:scaleX(1)}
+#sbtn:disabled{opacity:.3;cursor:not-allowed}
+#warnmsg{margin-top:12px;font-size:.82rem;color:rgba(200,57,43,.8);font-style:italic;display:none}
+
+/* RESULT */
+#result{display:none;margin-top:48px;border:1px solid var(--line);border-radius:4px;overflow:hidden;animation:cardIn .5s ease both}
+.rhead{background:var(--smoke);padding:44px 28px;text-align:center;border-bottom:1px solid var(--line)}
+.rlabel{font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ash);margin-bottom:10px;font-weight:600}
+.rscore{font-family:'Playfair Display',serif;font-size:clamp(4rem,13vw,6rem);font-weight:900;line-height:1}
+.rof{font-size:.88rem;color:var(--ash);margin-top:6px;font-style:italic}
+.rpred{display:inline-block;margin-top:18px;font-family:'Playfair Display',serif;font-size:.95rem;font-style:italic;padding:8px 22px;border-radius:2px;border:1px solid}
+.rstats{display:flex;border-top:1px solid var(--line)}
+.rstat{flex:1;text-align:center;padding:22px 12px;border-right:1px solid var(--line)}
+.rstat:last-child{border-right:none}
+.rsv{font-family:'Playfair Display',serif;font-size:1.9rem;font-weight:700}
+.rsl{font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ash);margin-top:3px;font-weight:600}
+#retrybtn{
+  display:block;width:100%;font-family:'Playfair Display',serif;
+  font-size:.88rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  background:transparent;color:var(--paper);border:none;
+  border-top:1px solid var(--line);padding:18px;cursor:pointer;transition:background .2s;
+}
+#retrybtn:hover{background:#111}
+
+@media(max-width:480px){
+  .opts{grid-template-columns:1fr}
+  .hz-big{font-size:3rem}
+  .arti-text{font-size:1.4rem}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hbg" id="bgc">汉</div>
+  <div class="pill">✦ HSK Level 1 · Latihan Soal</div>
+  <h1>Kenali <span class="red">汉字</span><br>&amp; <span class="gold">Artinya</span></h1>
+  <p class="sub">20 soal — Hanzi → Indonesia &amp; Indonesia → Hanzi</p>
+</header>
+
+<div id="ribbon">
+  <div class="rc"><span class="rv gold" id="rv0">0</span>Dijawab</div>
+  <div class="rc"><span class="rv g" id="rv1">—</span>Benar</div>
+  <div class="rc"><span class="rv r" id="rv2">—</span>Salah</div>
+  <div class="rc"><span class="rv" id="rv3">20</span>Sisa</div>
+  <div id="pbar-wrap"><div id="pbar"></div></div>
+</div>
+
+<main id="qform"></main>
+
+<div id="sub-area">
+  <button id="sbtn">Periksa Jawaban</button>
+  <p id="warnmsg">⚠ Masih ada soal yang belum dijawab.</p>
+  <div id="result"></div>
+</div>
+
+<script>
+var soal = [
+  {t:'h2i', hz:'你好', py:'ni hao',
+   jaw:'Halo / Sapaan umum',
+   sal:['Terima kasih','Selamat tinggal','Permisi'],
+   tip:'你好 adalah sapaan paling umum. 你 = kamu, 好 = baik. Bentuk formal: 您好.'},
+  {t:'h2i', hz:'谢谢', py:'xie xie',
+   jaw:'Terima kasih',
+   sal:['Maaf','Sama-sama','Selamat pagi'],
+   tip:'谢谢 = terima kasih. Dibalas dengan 不客气 (sama-sama).'},
+  {t:'h2i', hz:'朋友', py:'peng you',
+   jaw:'Teman / Sahabat',
+   sal:['Keluarga','Guru','Dokter'],
+   tip:'朋友 = teman. 朋 dan 友 keduanya bermakna teman.'},
+  {t:'h2i', hz:'学校', py:'xue xiao',
+   jaw:'Sekolah',
+   sal:['Rumah sakit','Perpustakaan','Toko'],
+   tip:'学校 = sekolah. 学 = belajar, 校 = institusi.'},
+  {t:'h2i', hz:'喝', py:'he',
+   jaw:'Minum',
+   sal:['Makan','Memasak','Membeli'],
+   tip:'喝 = minum. Contoh: 喝茶 = minum teh, 喝水 = minum air.'},
+  {t:'h2i', hz:'漂亮', py:'piao liang',
+   jaw:'Cantik / Indah',
+   sal:['Pintar','Kaya','Tinggi'],
+   tip:'漂亮 = cantik/indah. Contoh: 她很漂亮 = Dia sangat cantik.'},
+  {t:'h2i', hz:'电影', py:'dian ying',
+   jaw:'Film',
+   sal:['Musik','Buku','Televisi'],
+   tip:'电影 = film. 电 = listrik, 影 = bayangan. Bioskop = 电影院.'},
+  {t:'h2i', hz:'出租车', py:'chu zu che',
+   jaw:'Taksi',
+   sal:['Pesawat','Bus kota','Sepeda'],
+   tip:'出租车 = taksi. 出租 = menyewakan, 车 = kendaraan.'},
+  {t:'h2i', hz:'医院', py:'yi yuan',
+   jaw:'Rumah sakit',
+   sal:['Bank','Kantor','Sekolah'],
+   tip:'医院 = rumah sakit. 医 = medis, 院 = gedung. Dokter = 医生.'},
+  {t:'h2i', hz:'天气', py:'tian qi',
+   jaw:'Cuaca',
+   sal:['Musim','Langit','Angin'],
+   tip:'天气 = cuaca. 天 = langit/hari, 气 = udara/hawa.'},
+  {t:'i2h', arti:'Ibu', sub:'Panggilan untuk ibu',
+   jaw:{hz:'妈妈', py:'ma ma'},
+   sal:[{hz:'爸爸',py:'ba ba'},{hz:'姐姐',py:'jie jie'},{hz:'奶奶',py:'nai nai'}],
+   tip:'妈妈 = ibu. Bedakan: 爸爸 = ayah, 奶奶 = nenek.'},
+  {t:'i2h', arti:'Tidur', sub:'Beristirahat di malam hari',
+   jaw:{hz:'睡觉', py:'shui jiao'},
+   sal:[{hz:'起床',py:'qi chuang'},{hz:'洗澡',py:'xi zao'},{hz:'吃饭',py:'chi fan'}],
+   tip:'睡觉 = tidur. Lawannya: 起床 = bangun tidur.'},
+  {t:'i2h', arti:'Senang / Gembira', sub:'Perasaan bahagia',
+   jaw:{hz:'高兴', py:'gao xing'},
+   sal:[{hz:'喜欢',py:'xi huan'},{hz:'生气',py:'sheng qi'},{hz:'高',py:'gao'}],
+   tip:'高兴 = senang. Sering dipakai: 很高兴认识你 = senang berkenalan.'},
+  {t:'i2h', arti:'Belajar', sub:'Proses memperoleh ilmu',
+   jaw:{hz:'学习', py:'xue xi'},
+   sal:[{hz:'工作',py:'gong zuo'},{hz:'看书',py:'kan shu'},{hz:'休息',py:'xiu xi'}],
+   tip:'学习 = belajar. 学 = mempelajari, 习 = melatih/mengulang.'},
+  {t:'i2h', arti:'Pesawat terbang', sub:'Kendaraan yang terbang di udara',
+   jaw:{hz:'飞机', py:'fei ji'},
+   sal:[{hz:'出租车',py:'chu zu che'},{hz:'火车',py:'huo che'},{hz:'船',py:'chuan'}],
+   tip:'飞机 = pesawat. 飞 = terbang, 机 = mesin. Bandara = 机场.'},
+  {t:'i2h', arti:'Melihat / Menonton', sub:'Menggunakan mata untuk melihat',
+   jaw:{hz:'看', py:'kan'},
+   sal:[{hz:'听',py:'ting'},{hz:'说',py:'shuo'},{hz:'写',py:'xie'}],
+   tip:'看 = melihat/menonton. 听 = mendengar, 说 = berbicara, 写 = menulis.'},
+  {t:'i2h', arti:'Panas (cuaca)', sub:'Suhu yang tinggi',
+   jaw:{hz:'热', py:'re'},
+   sal:[{hz:'冷',py:'leng'},{hz:'大',py:'da'},{hz:'多',py:'duo'}],
+   tip:'热 = panas. Lawannya: 冷 = dingin. Contoh: 天气太热了！'},
+  {t:'i2h', arti:'Berapa harganya?', sub:'Menanyakan harga',
+   jaw:{hz:'多少钱', py:'duo shao qian'},
+   sal:[{hz:'几点了',py:'ji dian le'},{hz:'什么时候',py:'shen me shi hou'},{hz:'多少人',py:'duo shao ren'}],
+   tip:'多少钱？= Berapa harganya? 钱 = uang.'},
+  {t:'i2h', arti:'Sama-sama', sub:'Jawaban atas terima kasih',
+   jaw:{hz:'不客气', py:'bu ke qi'},
+   sal:[{hz:'没关系',py:'mei guan xi'},{hz:'对不起',py:'dui bu qi'},{hz:'再见',py:'zai jian'}],
+   tip:'不客气 = sama-sama (setelah 谢谢). 没关系 = tidak apa-apa (setelah maaf).'},
+  {t:'i2h', arti:'Suka / Menyukai', sub:'Perasaan positif terhadap sesuatu',
+   jaw:{hz:'喜欢', py:'xi huan'},
+   sal:[{hz:'爱',py:'ai'},{hz:'要',py:'yao'},{hz:'想',py:'xiang'}],
+   tip:'喜欢 = suka. 爱 = cinta (lebih dalam). 想 = mau/rindu. 要 = ingin/perlu.'}
+];
+
+function shuffle(arr) {
+  var a = arr.slice();
+  for (var i = a.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+  }
+  return a;
+}
+
+var bgChars = ['汉','字','你','好','学','爱','家','中','语','人'];
+var bgIdx = 0;
+var bgEl = document.getElementById('bgc');
+bgEl.style.transition = 'opacity .4s';
+setInterval(function() {
+  bgEl.style.opacity = '0';
+  setTimeout(function() {
+    bgEl.textContent = bgChars[bgIdx % bgChars.length];
+    bgEl.style.opacity = '1';
+    bgIdx++;
+  }, 400);
+}, 3000);
+
+var form = document.getElementById('qform');
+
+soal.forEach(function(item, i) {
+  var card = document.createElement('div');
+  card.className = 'qcard';
+  card.id = 'card' + i;
+  card.style.animationDelay = (i * 0.04) + 's';
+
+  // build options array
+  var allOpts = [];
+  if (item.t === 'h2i') {
+    allOpts.push({label: item.jaw, isAns: true});
+    item.sal.forEach(function(s) { allOpts.push({label: s, isAns: false}); });
+  } else {
+    allOpts.push({label: item.jaw, isAns: true});
+    item.sal.forEach(function(s) { allOpts.push({label: s, isAns: false}); });
+  }
+  allOpts = shuffle(allOpts);
+
+  // question body
+  var qbody = '';
+  if (item.t === 'h2i') {
+    qbody = '<div class="hz-wrap"><div><div class="hz-big">' + item.hz + '</div><div class="hz-py">' + item.py + '</div></div></div><div class="divider"></div>';
+  } else {
+    qbody = '<div class="arti-wrap"><div class="arti-label">Pilih Hanzi yang tepat ↓</div><div class="arti-text">' + item.arti + '</div><div class="arti-sub">' + (item.sub || '') + '</div></div><div class="divider"></div>';
+  }
+
+  // options
+  var optsHtml = '<div class="opts">';
+  var lets = ['A','B','C','D'];
+  allOpts.forEach(function(opt, j) {
+    var inner = '';
+    if (item.t === 'h2i') {
+      inner = '<span class="otext">' + opt.label + '</span>';
+    } else {
+      inner = '<span class="otext"><span class="zh">' + opt.label.hz + '</span><span class="py">' + opt.label.py + '</span></span>';
+    }
+    var ansVal = opt.isAns ? '1' : '0';
+    optsHtml += '<label class="opt" id="lbl' + i + '_' + j + '">' +
+      '<input type="radio" name="q' + i + '" value="' + j + '" data-ans="' + ansVal + '"/>' +
+      '<span class="oletter">' + lets[j] + '</span>' +
+      inner + '</label>';
+  });
+  optsHtml += '</div>';
+
+  var typeTag = item.t === 'h2i' ? '汉字 → Arti' : 'Arti → 汉字';
+
+  card.innerHTML =
+    '<div class="qtop"><span class="qnum">' + String(i+1).padStart(2,'0') + '.</span><span class="qtag">' + typeTag + '</span></div>' +
+    qbody + optsHtml +
+    '<div class="qexp" id="exp' + i + '">' + item.tip + '</div>';
+
+  form.appendChild(card);
+});
+
+// LIVE TRACKING
+var answered = 0, benar = 0, salahCount = 0;
+var rv0 = document.getElementById('rv0');
+var rv1 = document.getElementById('rv1');
+var rv2 = document.getElementById('rv2');
+var rv3 = document.getElementById('rv3');
+var pbar = document.getElementById('pbar');
+
+form.addEventListener('change', function(e) {
+  if (!e.target || e.target.type !== 'radio') return;
+  var card = e.target.closest('.qcard');
+  if (card.classList.contains('done')) return;
+  card.classList.add('done');
+  answered++;
+  if (e.target.getAttribute('data-ans') === '1') benar++;
+  else salahCount++;
+  rv0.textContent = answered;
+  rv1.textContent = benar;
+  rv2.textContent = salahCount;
+  rv3.textContent = soal.length - answered;
+  pbar.style.width = (answered / soal.length * 100) + '%';
+});
+
+// SUBMIT
+document.getElementById('sbtn').addEventListener('click', function() {
+  var miss = [];
+  for (var i = 0; i < soal.length; i++) {
+    if (!document.querySelector('input[name="q' + i + '"]:checked')) miss.push(i);
+  }
+  if (miss.length > 0) {
+    document.getElementById('warnmsg').style.display = 'block';
+    document.getElementById('card' + miss[0]).scrollIntoView({behavior:'smooth', block:'center'});
+    for (var m = 0; m < miss.length; m++) document.getElementById('card' + miss[m]).classList.add('err');
+    return;
+  }
+  document.getElementById('warnmsg').style.display = 'none';
+  document.getElementById('sbtn').disabled = true;
+  var allRadios = document.querySelectorAll('input[type="radio"]');
+  for (var r = 0; r < allRadios.length; r++) allRadios[r].disabled = true;
+
+  var totalBenar = 0;
+  for (var i = 0; i < soal.length; i++) {
+    var checked = document.querySelector('input[name="q' + i + '"]:checked');
+    if (checked && checked.getAttribute('data-ans') === '1') totalBenar++;
+    var radios = document.querySelectorAll('input[name="q' + i + '"]');
+    for (var j = 0; j < radios.length; j++) {
+      var lbl = radios[j].closest('.opt');
+      if (radios[j].getAttribute('data-ans') === '1') lbl.classList.add('is-correct');
+      else if (radios[j].checked) lbl.classList.add('is-wrong');
+    }
+    var exp = document.getElementById('exp' + i);
+    if (exp) exp.classList.add('show');
+  }
+
+  var score = Math.round(totalBenar / soal.length * 100);
+  var predText, predColor;
+  if (score >= 90) { predText = 'Luar Biasa — Kamu kuasai HSK 1!'; predColor = '#D4A017'; }
+  else if (score >= 75) { predText = 'Sangat Baik — Hampir sempurna!'; predColor = '#6EC49A'; }
+  else if (score >= 60) { predText = 'Baik — Terus berlatih!'; predColor = '#D4A017'; }
+  else if (score >= 40) { predText = 'Cukup — Ulangi kosakata dasar.'; predColor = '#E09050'; }
+  else { predText = 'Semangat — Coba lagi, kamu bisa!'; predColor = '#C8392B'; }
+
+  var rb = document.getElementById('result');
+  rb.innerHTML =
+    '<div class="rhead">' +
+      '<div class="rlabel">Hasil Akhir</div>' +
+      '<div class="rscore" style="color:' + predColor + '">' + score + '<span style="font-size:.38em;vertical-align:super">%</span></div>' +
+      '<div class="rof">' + totalBenar + ' dari ' + soal.length + ' soal benar</div>' +
+      '<div class="rpred" style="color:' + predColor + ';border-color:' + predColor + '">' + predText + '</div>' +
+    '</div>' +
+    '<div class="rstats">' +
+      '<div class="rstat"><div class="rsv" style="color:#6EC49A">' + totalBenar + '</div><div class="rsl">Benar</div></div>' +
+      '<div class="rstat"><div class="rsv" style="color:#E07070">' + (soal.length - totalBenar) + '</div><div class="rsl">Salah</div></div>' +
+      '<div class="rstat"><div class="rsv" style="color:#D4A017">' + score + '%</div><div class="rsl">Nilai</div></div>' +
+    '</div>' +
+    '<button id="retrybtn">↺ Coba Lagi</button>';
+  rb.style.display = 'block';
+  rb.scrollIntoView({behavior:'smooth', block:'start'});
+  document.getElementById('retrybtn').addEventListener('click', function() { location.reload(); });
+});
+</script>
+</body>
+</html>

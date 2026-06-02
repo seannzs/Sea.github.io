@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Kuis PJOK & Kesehatan — 100 Soal — SMA Kelas XI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,600&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #F0EBE3; --surface: #FDFAF6; --ink: #1A1614;
+      --muted: #7A7068; --accent: #C0392B; --border: #DDD0C0;
+      --correct: #2B5E3E; --wrong: #8B2020; --radius: 12px;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--ink); min-height: 100vh; padding: 0 0 80px; }
+
+    header {
+      background: var(--ink); color: #F0EBE3;
+      padding: 52px 24px 44px; text-align: center; position: relative; overflow: hidden;
+    }
+    header::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 70% 50%, rgba(192,57,43,.2) 0%, transparent 65%),
+                  radial-gradient(ellipse at 20% 80%, rgba(192,57,43,.12) 0%, transparent 55%);
+    }
+    header .label {
+      position: relative; display: inline-block; font-size: .68rem; font-weight: 600;
+      letter-spacing: .22em; text-transform: uppercase; color: #E8A87C;
+      background: rgba(232,168,124,.1); border: 1px solid rgba(232,168,124,.3);
+      padding: 5px 16px; border-radius: 99px; margin-bottom: 18px;
+    }
+    header h1 {
+      position: relative;
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(1.9rem, 5vw, 3rem); line-height: 1.18;
+    }
+    header .deco {
+      position: absolute; right: 5%; top: 50%; transform: translateY(-50%);
+      font-size: 5rem; opacity: .06; user-select: none; line-height: 1;
+    }
+    header .sub { position: relative; margin-top: 10px; color: #A09080; font-size: .9rem; }
+    header .difficulty {
+      position: relative; display: inline-block; margin-top: 14px;
+      font-size: .78rem; font-weight: 600; color: #E8A87C;
+      background: rgba(232,168,124,.08); border: 1px solid rgba(232,168,124,.25);
+      padding: 4px 14px; border-radius: 99px; letter-spacing: .06em;
+    }
+
+    #progress-wrap { position: sticky; top: 0; z-index: 10; background: var(--ink); }
+    #progress-bar { height: 3px; background: var(--accent); width: 0%; transition: width .35s ease; }
+    #progress-count {
+      text-align: right; padding: 4px 16px 5px; font-size: .7rem;
+      color: #7A7068; background: var(--ink); letter-spacing: .05em;
+    }
+
+    .container { max-width: 780px; margin: 0 auto; padding: 40px 20px 0; }
+
+    .question-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 32px 28px; margin-bottom: 18px;
+      transition: box-shadow .2s;
+    }
+    .question-card:hover { box-shadow: 0 4px 22px rgba(0,0,0,.07); }
+    .question-card.unanswered { border-color: #C8962A; box-shadow: 0 0 0 3px rgba(200,150,42,.14); }
+
+    .q-meta { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+    .q-num { font-family: 'Playfair Display', serif; font-size: 1.35rem; font-weight: 700; color: var(--accent); min-width: 30px; }
+    .q-tag {
+      font-size: .68rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase;
+      color: var(--muted); background: var(--bg); border: 1px solid var(--border);
+      padding: 3px 10px; border-radius: 99px;
+    }
+    .q-diff {
+      font-size: .65rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+      padding: 3px 9px; border-radius: 99px;
+    }
+    .q-diff.hard { color: #8B3A2A; background: rgba(139,58,42,.08); border: 1px solid rgba(139,58,42,.2); }
+    .q-diff.medium { color: #7A5A1A; background: rgba(122,90,26,.08); border: 1px solid rgba(122,90,26,.2); }
+
+    .q-text { font-size: 1rem; line-height: 1.72; font-weight: 500; margin-bottom: 20px; }
+    .q-note { font-size: .82rem; color: var(--muted); font-style: italic; margin-bottom: 16px; margin-top: -10px; }
+
+    .options { display: flex; flex-direction: column; gap: 9px; }
+    .option-label {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 12px 16px; border: 1.5px solid var(--border); border-radius: 8px;
+      cursor: pointer; transition: border-color .15s, background .15s; user-select: none;
+    }
+    .option-label:hover { border-color: var(--accent); background: #FBF4EE; }
+    .option-label input[type="radio"] { display: none; }
+    .opt-letter {
+      flex-shrink: 0; width: 26px; height: 26px; border-radius: 50%;
+      background: var(--bg); border: 1.5px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: .74rem; font-weight: 700; color: var(--muted);
+      transition: all .15s; margin-top: 1px;
+    }
+    .option-label:has(input:checked) { border-color: var(--accent); background: #FBF4EE; }
+    .option-label:has(input:checked) .opt-letter { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .opt-text { font-size: .92rem; line-height: 1.55; padding-top: 2px; }
+
+    .option-label.correct { border-color: var(--correct); background: #EAF3EE; }
+    .option-label.correct .opt-letter { background: var(--correct); border-color: var(--correct); color: #fff; }
+    .option-label.wrong { border-color: var(--wrong); background: #FAF0EE; }
+    .option-label.wrong .opt-letter { background: var(--wrong); border-color: var(--wrong); color: #fff; }
+
+    #btn-wrap { text-align: center; margin-top: 40px; }
+    #submit-btn {
+      font-family: 'DM Sans', sans-serif; font-size: 1rem; font-weight: 600;
+      background: var(--ink); color: #F0EBE3; border: none;
+      padding: 16px 56px; border-radius: 8px; cursor: pointer;
+      transition: background .2s, transform .1s; letter-spacing: .04em;
+    }
+    #submit-btn:hover { background: #2A2420; transform: translateY(-1px); }
+    #submit-btn:active { transform: translateY(0); }
+    #submit-btn:disabled { opacity: .4; cursor: not-allowed; }
+
+    #warn-msg {
+      display: none; margin-top: 12px; font-size: .86rem; color: #8B6200;
+      background: #FFF8E6; border: 1px solid #DEB84A; border-radius: 8px;
+      padding: 10px 18px; text-align: center;
+    }
+
+    #hasil {
+      display: none; margin-top: 44px; background: var(--ink); color: #F0EBE3;
+      border-radius: var(--radius); padding: 44px 32px; text-align: center;
+      animation: fadeUp .5s ease both;
+    }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }
+    .score-label { font-size: .72rem; letter-spacing: .2em; text-transform: uppercase; color: #9A8878; margin-bottom: 10px; }
+    .score-num { font-family: 'Playfair Display', serif; font-size: clamp(3.5rem,10vw,5.5rem); font-weight: 700; line-height: 1; color: var(--accent); }
+    .score-of { font-size: .88rem; color: #9A8878; margin-top: 6px; }
+    .predikat { display: inline-block; margin-top: 18px; font-size: 1rem; font-weight: 600; padding: 7px 22px; border-radius: 99px; border: 1.5px solid rgba(255,255,255,.15); }
+    .divider { width: 48px; height: 2px; background: rgba(255,255,255,.1); margin: 24px auto; }
+    .summary-row { display: flex; justify-content: center; gap: 36px; flex-wrap: wrap; margin-bottom: 30px; }
+    .stat .val { font-size: 1.65rem; font-weight: 700; }
+    .stat .val.g { color: #7DCFAA; }
+    .stat .val.r { color: #E07878; }
+    .stat .lbl { font-size: .75rem; color: #9A8878; margin-top: 3px; }
+    .kunci-title { font-family: 'Playfair Display', serif; font-size: 1.22rem; margin-bottom: 18px; }
+    .kunci-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(270px,1fr)); gap: 10px; text-align: left; }
+    .kunci-item { background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.09); border-radius: 8px; padding: 12px 14px; font-size: .84rem; line-height: 1.55; }
+    .kunci-item.ok { border-color: rgba(125,207,170,.2); }
+    .ki-no { color: #E8A87C; font-weight: 700; margin-bottom: 4px; font-size: .8rem; }
+    .ki-ans { color: #7DCFAA; font-weight: 600; }
+    .ki-your { color: #E07878; font-size: .8rem; margin-top: 3px; }
+    .ki-explain { color: #9A8878; font-size: .78rem; margin-top: 4px; font-style: italic; }
+
+    #retry-btn {
+      margin-top: 28px; font-family: 'DM Sans', sans-serif; font-size: .92rem; font-weight: 600;
+      background: transparent; color: #F0EBE3; border: 1.5px solid rgba(255,255,255,.22);
+      padding: 12px 36px; border-radius: 8px; cursor: pointer; transition: all .2s;
+    }
+    #retry-btn:hover { border-color: rgba(255,255,255,.6); background: rgba(255,255,255,.06); }
+
+    @media (max-width: 500px) { .question-card { padding: 22px 16px; } #hasil { padding: 32px 16px; } }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="deco">🥋</div>
+  <div class="label">SMA &middot; Kelas XI &middot; PJOK &amp; Kesehatan</div>
+  <h1>Kuis PJOK &amp; Kesehatan</h1>
+  <p class="sub">Pencak Silat · Senam Lantai · Senam Aerobatik · Kebugaran · HIV &mdash; 100 soal pilihan ganda</p>
+  <div class="difficulty">&#9888; Tingkat Kesulitan: Dasar &ndash; Menengah</div>
+</header>
+<div id="progress-wrap">
+  <div id="progress-bar"></div>
+  <div id="progress-count">0 / 100 dijawab</div>
+</div>
+
+<div class="container">
+  <div id="quiz-form"></div>
+  <div id="btn-wrap">
+    <button id="submit-btn">Kirim Jawaban</button>
+    <div id="warn-msg">&#9888; Masih ada soal yang belum dijawab. Lengkapi semua jawaban terlebih dahulu.</div>
+  </div>
+  <div id="hasil"></div>
+</div>
+
+<script>
+const questions = [
+
+  /* ── 1-20 PENCAK SILAT ── */
+  {
+    topic:"Pencak Silat",diff:"medium",
+    q:"Pencak silat adalah seni bela diri yang berasal dari …",
+    opts:["Asia Timur","Asia Selatan","Asia Tenggara","Asia Barat"],
+    ans:2,
+    explain:"Pencak silat merupakan seni bela diri tradisional yang berasal dari kawasan Asia Tenggara, khususnya Indonesia, Malaysia, Brunei, dan Singapura."
+  },
+  {
+    topic:"Pencak Silat",diff:"medium",
+    q:"Dalam pencak silat, sikap awal sebelum melakukan serangan atau pembelaan disebut …",
+    opts:["Kuda-kuda","Tangkisan","Elakan","Serangan"],
+    ans:0,
+    explain:"Kuda-kuda adalah posisi dasar (stance) dalam pencak silat yang menjadi landasan untuk melakukan gerakan serangan maupun pembelaan."
+  },
+  {
+    topic:"Pencak Silat",diff:"medium",
+    q:"Aspek yang TIDAK termasuk dalam empat aspek pencak silat adalah …",
+    opts:["Mental spiritual","Seni budaya","Bela diri","Atletik"],
+    ans:3,
+    explain:"Empat aspek pencak silat: (1) Mental spiritual, (2) Seni budaya, (3) Bela diri, dan (4) Olahraga. 'Atletik' bukan bagian dari keempat aspek tersebut."
+  },
+  {
+    topic:"Pencak Silat",diff:"medium",
+    q:"Teknik serangan tangan terbuka dalam pencak silat yang menggunakan telapak tangan disebut …",
+    opts:["Pukulan","Tebakan","Tendangan","Sapuan"],
+    ans:1,
+    explain:"Tebakan adalah serangan menggunakan telapak tangan terbuka. Berbeda dengan pukulan yang menggunakan kepalan tangan."
+  },
+  {
+    topic:"Pencak Silat",diff:"medium",
+    q:"Teknik pembelaan dalam pencak silat yang bertujuan menghindar dari serangan lawan tanpa kontak fisik disebut …",
+    opts:["Tangkisan","Elakan","Hindaran","Guntingan"],
+    ans:2,
+    explain:"Hindaran adalah teknik menghindari serangan tanpa kontak langsung dengan anggota tubuh lawan, berbeda dengan tangkisan yang mengadang serangan."
+  },
+  {
+    topic:"Pencak Silat",diff:"medium",
+    q:"Jenis kuda-kuda yang menempatkan beban tubuh sepenuhnya pada kaki depan disebut kuda-kuda …",
+    opts:["Tengah","Belakang","Depan","Samping"],
+    ans:2,
+    explain:"Kuda-kuda depan: berat badan bertumpu pada kaki depan. Kuda-kuda belakang: berat pada kaki belakang. Kuda-kuda tengah: berat seimbang."
+  },
+  {
+    topic:"Pencak Silat",diff:"medium",
+    q:"Dalam pertandingan pencak silat kategori tanding, poin tertinggi diberikan untuk teknik …",
+    opts:["Pukulan ke badan","Tendangan ke kepala","Tangkisan","Elakan"],
+    ans:1,
+    explain:"Tendangan ke kepala lawan mendapat nilai tertinggi (nilai 2) dalam pertandingan pencak silat kategori tanding, sedangkan pukulan bernilai 1."
+  },
+  {
+    topic:"Pencak Silat",diff:"medium",
+    q:"Kategori pencak silat yang menampilkan keindahan gerak dengan iringan musik disebut …",
+    opts:["Tanding","Tunggal","Ganda","Regu"],
+    ans:1,
+    explain:"Kategori tunggal mempertandingkan pesilat secara individu menampilkan jurus baku dengan keindahan gerak, irama, dan kemantapan."
+  },
+  {
+    topic:"Pencak Silat",diff:"hard",
+    q:"Nama organisasi pencak silat internasional yang menaungi cabang olahraga ini adalah …",
+    opts:["IPSI","PERSILAT","FPI","WEKF"],
+    ans:1,
+    explain:"PERSILAT (Persekutuan Pencak Silat Antara Bangsa) adalah organisasi pencak silat internasional. IPSI adalah organisasi pencak silat Indonesia."
+  },
+  {
+    topic:"Pencak Silat",diff:"medium",
+    q:"Teknik menjatuhkan lawan dengan menggunakan kaki untuk menyapu/menyabit kaki lawan disebut …",
+    opts:["Guntingan","Sapuan","Jatuhan","Kuncian"],
+    ans:1,
+    explain:"Sapuan adalah teknik menjatuhkan lawan dengan cara menyapu kaki lawan menggunakan kaki, baik dari samping maupun dari depan."
+  },
+  {
+    topic:"Pencak Silat",diff:"medium",
+    q:"Pakaian resmi pesilat dalam pertandingan berwarna …",
+    opts:["Putih polos","Hitam polos","Merah polos","Biru polos"],
+    ans:1,
+    explain:"Pakaian resmi pesilat dalam pertandingan adalah hitam polos (seragam standar IPSI/PERSILAT). Sabuk warna menandakan tingkatan."
+  },
+  {
+    topic:"Pencak Silat",diff:"medium",
+    q:"Lama pertandingan pencak silat kategori tanding pada satu babak adalah …",
+    opts:["1 menit","2 menit","3 menit","5 menit"],
+    ans:1,
+    explain:"Setiap babak dalam kategori tanding pencak silat berlangsung selama 2 menit, dengan waktu istirahat 1 menit antarbabak."
+  },
+  {
+    topic:"Pencak Silat",diff:"hard",
+    q:"Teknik pembelaan yang menahan serangan lawan menggunakan tangan atau kaki disebut …",
+    opts:["Elakan","Hindaran","Tangkisan","Kuncian"],
+    ans:2,
+    explain:"Tangkisan adalah teknik pembelaan dengan cara menahan/menghalau serangan lawan menggunakan tangan atau kaki agar serangan tidak mengenai sasaran."
+  },
+  {
+    topic:"Pencak Silat",diff:"medium",
+    q:"Dalam pencak silat, pola langkah yang membentuk huruf 'S' atau zig-zag digunakan untuk …",
+    opts:["Menambah kecepatan serangan","Menghindar dan berpindah posisi","Meningkatkan keseimbangan","Memperkuat kuda-kuda"],
+    ans:1,
+    explain:"Pola langkah zig-zag atau berbentuk S digunakan untuk menghindar dari serangan sambil berpindah posisi secara efektif."
+  },
+  {
+    topic:"Pencak Silat",diff:"medium",
+    q:"Tendangan yang dilakukan dengan menggunakan sisi luar telapak kaki dan diarahkan ke samping disebut tendangan …",
+    opts:["Depan","Belakang","Samping","Sabit"],
+    ans:2,
+    explain:"Tendangan samping menggunakan sisi luar (pisau kaki) telapak kaki, diarahkan ke samping tubuh dengan memutar pinggul."
+  },
+  {
+    topic:"Pencak Silat",diff:"hard",
+    q:"Pencak silat resmi dipertandingkan di SEA Games pertama kali pada tahun …",
+    opts:["1975","1987","1997","2001"],
+    ans:1,
+    explain:"Pencak silat dipertandingkan secara resmi di SEA Games pertama kali pada tahun 1987 di Jakarta, Indonesia."
+  },
+  {
+    topic:"Pencak Silat",diff:"medium",
+    q:"Teknik mengunci sendi lawan sehingga tidak bisa bergerak disebut …",
+    opts:["Sapuan","Guntingan","Kuncian","Jatuhan"],
+    ans:2,
+    explain:"Kuncian adalah teknik menguasai lawan dengan cara mengunci persendian (tangan, kaki, atau leher) sehingga lawan tidak bisa bergerak bebas."
+  },
+  {
+    topic:"Pencak Silat",diff:"medium",
+    q:"Dalam pencak silat, area yang BOLEH diserang pada kategori tanding adalah …",
+    opts:["Kepala dan wajah","Selangkangan","Dada, perut, dan punggung","Lutut dan betis"],
+    ans:2,
+    explain:"Area sasaran yang diperbolehkan dalam pencak silat kategori tanding adalah dada, perut, pinggang, punggung, dan kepala (khusus tendangan)."
+  },
+  {
+    topic:"Pencak Silat",diff:"hard",
+    q:"Jurus dalam pencak silat yang merupakan rangkaian gerakan baku yang harus dihafal dan dipertunjukkan disebut …",
+    opts:["Pola langkah","Kuda-kuda","Jurus","Adegan"],
+    ans:2,
+    explain:"Jurus adalah rangkaian gerakan dasar pencak silat yang telah dibakukan dan menjadi materi wajib kategori tunggal, ganda, dan regu."
+  },
+  {
+    topic:"Pencak Silat",diff:"medium",
+    q:"Wasit dalam pertandingan pencak silat memberikan peringatan (tegoran) jika pesilat melakukan …",
+    opts:["Tendangan ke kepala","Elakan yang baik","Serangan ke daerah terlarang (selangkangan)","Penggunaan kuda-kuda depan"],
+    ans:2,
+    explain:"Wasit memberikan peringatan (hukuman) jika pesilat menyerang daerah terlarang seperti selangkangan, sendi, atau leher secara berlebihan."
+  },
+
+  /* ── 21-40 SENAM LANTAI ── */
+  {
+    topic:"Senam Lantai",diff:"medium",
+    q:"Senam lantai dilakukan di atas …",
+    opts:["Trampolin","Matras/lantai","Palang sejajar","Kuda pelana"],
+    ans:1,
+    explain:"Senam lantai (floor exercise) dilakukan di atas matras atau lantai dengan ukuran standar 12×12 meter dalam kompetisi internasional."
+  },
+  {
+    topic:"Senam Lantai",diff:"medium",
+    q:"Gerakan berguling ke depan dalam senam lantai disebut …",
+    opts:["Back roll","Forward roll","Cartwheel","Handstand"],
+    ans:1,
+    explain:"Forward roll (guling depan) adalah gerakan berguling ke depan dimulai dari posisi jongkok, kepala ditundukkan, dan badan dibulatkan."
+  },
+  {
+    topic:"Senam Lantai",diff:"medium",
+    q:"Gerakan berdiri tegak dengan tumpuan kedua tangan disebut …",
+    opts:["Headstand","Handstand","Meroda","Roundoff"],
+    ans:1,
+    explain:"Handstand adalah sikap berdiri tegak lurus dengan tumpuan dua tangan, tubuh lurus dari tangan hingga ujung kaki."
+  },
+  {
+    topic:"Senam Lantai",diff:"medium",
+    q:"Gerakan berdiri dengan tumpuan kepala dan kedua tangan membentuk segitiga disebut …",
+    opts:["Handstand","Headstand","Flic-flac","Back walkover"],
+    ans:1,
+    explain:"Headstand adalah sikap berdiri terbalik dengan tumpuan kepala (dahi) dan kedua tangan yang membentuk segitiga sama sisi."
+  },
+  {
+    topic:"Senam Lantai",diff:"medium",
+    q:"Gerakan guling ke belakang dalam senam lantai disebut …",
+    opts:["Forward roll","Back roll","Cartwheel","Round off"],
+    ans:1,
+    explain:"Back roll (guling belakang) adalah gerakan berguling ke arah belakang, dimulai dari posisi jongkok dengan punggung diturunkan ke matras."
+  },
+  {
+    topic:"Senam Lantai",diff:"medium",
+    q:"Teknik keselamatan yang harus dikuasai dalam guling depan adalah …",
+    opts:["Melihat ke depan saat mengguling","Menundukkan kepala agar tengkuk menjadi tumpuan","Meluruskan kedua kaki","Membuka tangan selebar mungkin"],
+    ans:1,
+    explain:"Saat guling depan, kepala harus ditundukkan sehingga tengkuk (bukan kepala) yang menjadi tumpuan untuk mencegah cedera leher."
+  },
+  {
+    topic:"Senam Lantai",diff:"medium",
+    q:"Gerakan memutar tubuh 360° ke samping dengan tumpuan tangan dan kaki secara bergantian disebut …",
+    opts:["Handstand","Headstand","Meroda (Cartwheel)","Round off"],
+    ans:2,
+    explain:"Meroda (cartwheel) adalah gerakan memutar badan ke samping dengan tumpuan tangan dan kaki secara bergantian seperti roda yang berputar."
+  },
+  {
+    topic:"Senam Lantai",diff:"hard",
+    q:"Gerakan senam lantai yang diawali lompatan ke belakang, tangan menyentuh lantai, kemudian kaki mendarat kembali disebut …",
+    opts:["Back roll","Back handspring (flic-flac)","Back walkover","Round off"],
+    ans:1,
+    explain:"Back handspring (flic-flac) adalah gerakan melompat ke belakang dengan tangan menyentuh lantai sebagai tumpuan, kemudian kaki mendarat. Gerakan ini membutuhkan kekuatan dan kelenturan tinggi."
+  },
+  {
+    topic:"Senam Lantai",diff:"medium",
+    q:"Posisi tubuh yang benar saat melakukan handstand adalah …",
+    opts:["Kaki sedikit ditekuk","Pinggang melengkung ke dalam","Tubuh lurus dari tangan hingga ujung kaki","Kepala menengok ke samping"],
+    ans:2,
+    explain:"Saat handstand, tubuh harus benar-benar lurus (vertikal) dari ujung jari tangan hingga ujung jari kaki untuk menjaga keseimbangan."
+  },
+  {
+    topic:"Senam Lantai",diff:"medium",
+    q:"Gerakan senam lantai yang merupakan gabungan meroda dan putaran adalah …",
+    opts:["Cartwheel","Round off","Back handspring","Aerial"],
+    ans:1,
+    explain:"Round off adalah variasi meroda yang diakhiri dengan pendaratan dua kaki secara bersamaan disertai putaran badan menghadap ke asal lompatan."
+  },
+  {
+    topic:"Senam Lantai",diff:"medium",
+    q:"Otot utama yang dilatih saat melakukan gerakan guling depan adalah …",
+    opts:["Otot bahu dan punggung","Otot tangan dan kaki","Otot perut dan punggung","Otot leher dan bahu"],
+    ans:2,
+    explain:"Guling depan melatih otot perut (untuk membulatkan badan) dan otot punggung (untuk fleksibilitas tulang belakang)."
+  },
+  {
+    topic:"Senam Lantai",diff:"hard",
+    q:"Dalam penilaian senam artistik, aspek yang dinilai TIDAK termasuk …",
+    opts:["Kesulitan (Difficulty)","Eksekusi (Execution)","Artistik/Komposisi","Kecepatan berlari"],
+    ans:3,
+    explain:"Penilaian senam artistik mencakup: nilai Kesulitan (D-score), nilai Eksekusi dan Artistik (E-score). Kecepatan berlari bukan aspek yang dinilai."
+  },
+  {
+    topic:"Senam Lantai",diff:"medium",
+    q:"Gerakan senam lantai yang memerlukan kelenturan tulang belakang paling besar adalah …",
+    opts:["Guling depan","Handstand","Kayang (Bridge)","Headstand"],
+    ans:2,
+    explain:"Kayang (bridge/back bend) memerlukan kelenturan tulang belakang (fleksibilitas lumbar dan thoracic) yang paling besar di antara gerakan dasar senam lantai."
+  },
+  {
+    topic:"Senam Lantai",diff:"medium",
+    q:"Posisi awal yang benar sebelum melakukan guling belakang adalah …",
+    opts:["Berdiri tegak","Jongkok membelakangi arah guling","Berbaring terlentang","Posisi push-up"],
+    ans:1,
+    explain:"Guling belakang dimulai dari posisi jongkok menghadap depan (membelakangi arah yang dituju), kemudian duduk dan mengguling ke belakang."
+  },
+  {
+    topic:"Senam Lantai",diff:"medium",
+    q:"Fungsi penggunaan matras dalam senam lantai adalah …",
+    opts:["Memperindah tampilan","Menambah kecepatan gerakan","Melindungi dari cedera saat mendarat","Menambah kesulitan gerakan"],
+    ans:2,
+    explain:"Matras berfungsi sebagai peredam benturan untuk melindungi pesenam dari cedera saat melakukan gerakan jatuh, berguling, atau mendarat."
+  },
+  {
+    topic:"Senam Lantai",diff:"hard",
+    q:"Gerakan salto ke depan tanpa tangan (tangan tidak menyentuh lantai) disebut …",
+    opts:["Back somersault","Front aerial","Round off","Flic-flac"],
+    ans:1,
+    explain:"Front aerial adalah gerakan salto ke depan (forward somersault) tanpa tangan menyentuh lantai, berbeda dengan front walkover yang menggunakan tangan."
+  },
+  {
+    topic:"Senam Lantai",diff:"medium",
+    q:"Latihan yang paling tepat untuk meningkatkan kemampuan handstand adalah …",
+    opts:["Latihan push-up dan core strength","Latihan lari sprint","Latihan renang","Latihan lompat jauh"],
+    ans:0,
+    explain:"Handstand memerlukan kekuatan bahu (push-up) dan kekuatan inti/core (plank, hollow body) untuk menopang seluruh berat badan pada kedua tangan."
+  },
+  {
+    topic:"Senam Lantai",diff:"medium",
+    q:"Kesalahan umum yang sering terjadi saat melakukan guling depan adalah …",
+    opts:["Terlalu cepat","Kepala tidak ditundukkan sehingga kepala menjadi tumpuan","Kaki terlalu rapat","Tangan terlalu lebar"],
+    ans:1,
+    explain:"Kesalahan paling berbahaya dalam guling depan adalah tidak menundukkan kepala, sehingga kepala (bukan tengkuk) yang menjadi tumpuan dan dapat menyebabkan cedera leher."
+  },
+  {
+    topic:"Senam Lantai",diff:"medium",
+    q:"Senam yang memadukan gerakan senam lantai dengan alat seperti pita, bola, dan simpai disebut …",
+    opts:["Senam artistik","Senam ritmik","Senam aerobik","Senam akrobatik"],
+    ans:1,
+    explain:"Senam ritmik (rhythmic gymnastics) memadukan gerakan senam dengan penggunaan alat seperti bola, pita, simpai, gada, dan tali, diiringi musik."
+  },
+  {
+    topic:"Senam Lantai",diff:"medium",
+    q:"Gerakan keseimbangan dalam senam lantai yang berdiri dengan satu kaki sementara kaki lainnya diangkat ke belakang disebut …",
+    opts:["Arabesque","Pirouette","Handstand","Headstand"],
+    ans:0,
+    explain:"Arabesque adalah posisi keseimbangan berdiri satu kaki dengan kaki lainnya diangkat ke belakang setinggi mungkin dalam posisi horizontal atau lebih."
+  },
+  {
+    topic:"Senam Lantai",diff:"hard",
+    q:"Durasi maksimum penampilan senam lantai putri dalam kompetisi internasional (FIG) adalah …",
+    opts:["60 detik","70 detik","90 detik","120 detik"],
+    ans:2,
+    explain:"Dalam kompetisi FIG, routine senam lantai putri berdurasi maksimum 90 detik diiringi musik, sementara putra maksimum 70 detik tanpa musik."
+  },
+
+  /* ── 41-55 SENAM AEROBATIK ── */
+  {
+    topic:"Senam Aerobatik",diff:"medium",
+    q:"Senam aerobatik adalah cabang senam yang menggabungkan …",
+    opts:["Gerakan akrobatik dengan iringan musik aerobik","Gerakan beladiri dengan senam","Renang dan senam lantai","Atletik dan senam ritmik"],
+    ans:0,
+    explain:"Senam aerobatik (acrobatic gymnastics) menggabungkan gerakan-gerakan akrobatik seperti piramid manusia, salto, dan keseimbangan dengan unsur seni gerak berenergi tinggi."
+  },
+  {
+    topic:"Senam Aerobatik",diff:"medium",
+    q:"Dalam senam aerobatik, pesenam yang berada di bawah dan menopang rekannya disebut …",
+    opts:["Flyer / atas","Base / bawah","Spotter","Partner"],
+    ans:1,
+    explain:"Base (bawah) adalah pesenam yang bertugas menopang atau melempar rekannya. Flyer (atas) adalah pesenam yang ditopang atau dilempar ke udara."
+  },
+  {
+    topic:"Senam Aerobatik",diff:"medium",
+    q:"Kategori senam aerobatik yang terdiri dari dua pesenam disebut …",
+    opts:["Solo","Pair (pasangan)","Trio","Group"],
+    ans:1,
+    explain:"Kategori dalam senam aerobatik: Solo (1 orang), Pair/Pasangan (2 orang), Trio (3 orang), dan Group (4 orang campuran)."
+  },
+  {
+    topic:"Senam Aerobatik",diff:"medium",
+    q:"Gerakan inti dalam senam aerobatik yang menampilkan keseimbangan di atas tubuh rekan disebut …",
+    opts:["Balance element","Dynamic element","Aerobic element","Acrobatic dance"],
+    ans:0,
+    explain:"Balance element adalah elemen keseimbangan statis di mana pesenam mempertahankan posisi tertentu di atas rekan (base) selama 3 detik dalam kompetisi."
+  },
+  {
+    topic:"Senam Aerobatik",diff:"hard",
+    q:"Dalam senam aerobatik, elemen yang melibatkan pelemparan, salto, atau rotasi pesenam atas disebut …",
+    opts:["Static element","Balance element","Dynamic element","Strength element"],
+    ans:2,
+    explain:"Dynamic element adalah elemen dinamis yang melibatkan pergerakan melayang di udara, seperti pelemparan (throw), salto, dan putaran yang dilakukan flyer."
+  },
+  {
+    topic:"Senam Aerobatik",diff:"medium",
+    q:"Aspek UTAMA yang membedakan senam aerobatik dari senam artistik lantai adalah …",
+    opts:["Penggunaan matras","Adanya unsur kerja sama tim dan akrobatik pasangan/grup","Penggunaan musik","Penilaian oleh juri"],
+    ans:1,
+    explain:"Ciri khas senam aerobatik adalah unsur kerja sama antar pesenam (berpasangan atau berkelompok) dengan teknik menopang, melempar, dan menangkap yang tidak ada di senam artistik lantai individual."
+  },
+  {
+    topic:"Senam Aerobatik",diff:"medium",
+    q:"Kemampuan fisik yang paling penting bagi pesenam 'base' dalam senam aerobatik adalah …",
+    opts:["Kelentukan","Kecepatan","Kekuatan dan stabilitas","Daya tahan aerobik"],
+    ans:2,
+    explain:"Base harus memiliki kekuatan otot yang besar dan stabilitas tubuh yang baik untuk menopang berat badan flyer dalam berbagai posisi statis maupun dinamis."
+  },
+  {
+    topic:"Senam Aerobatik",diff:"medium",
+    q:"Formasi piramid dalam senam aerobatik termasuk dalam kategori elemen …",
+    opts:["Dynamic","Balance","Strength","Flexibility"],
+    ans:1,
+    explain:"Piramid manusia dalam senam aerobatik termasuk balance element karena mempertahankan posisi keseimbangan statis di mana satu atau lebih flyer berada di atas base."
+  },
+  {
+    topic:"Senam Aerobatik",diff:"hard",
+    q:"Organisasi internasional yang menaungi senam aerobatik adalah …",
+    opts:["IOC","FINA","FIG (Fédération Internationale de Gymnastique)","IAAF"],
+    ans:2,
+    explain:"FIG (Fédération Internationale de Gymnastique) adalah federasi internasional yang menaungi seluruh cabang senam termasuk senam aerobatik (acrobatic gymnastics)."
+  },
+  {
+    topic:"Senam Aerobatik",diff:"medium",
+    q:"Peran pesenam yang berdiri di sisi untuk memastikan keselamatan saat latihan disebut …",
+    opts:["Flyer","Base","Spotter","Coach"],
+    ans:2,
+    explain:"Spotter adalah orang yang bertugas menjaga keselamatan pesenam selama latihan dengan siap menangkap atau membantu jika terjadi kesalahan atau jatuh."
+  },
+  {
+    topic:"Senam Aerobatik",diff:"medium",
+    q:"Gerakan dasar yang harus dikuasai sebelum belajar senam aerobatik adalah …",
+    opts:["Lari jarak jauh","Guling depan, guling belakang, dan handstand","Renang gaya bebas","Lempar lembing"],
+    ans:1,
+    explain:"Sebelum senam aerobatik, pesenam harus menguasai dasar senam lantai seperti guling depan, guling belakang, handstand, dan keterampilan akrobatik dasar lainnya."
+  },
+  {
+    topic:"Senam Aerobatik",diff:"hard",
+    q:"Dalam kompetisi senam aerobatik, rutinitas ditampilkan dengan durasi sekitar …",
+    opts:["1 menit","2 menit 30 detik","5 menit","10 menit"],
+    ans:1,
+    explain:"Rutinitas senam aerobatik dalam kompetisi FIG berdurasi sekitar 2 menit 30 detik untuk semua kategori (pair, trio, dan group)."
+  },
+  {
+    topic:"Senam Aerobatik",diff:"medium",
+    q:"Unsur artistik dalam senam aerobatik dinilai dari …",
+    opts:["Kecepatan gerakan semata","Keselarasan musik, ekspresi, dan kualitas gerak","Tinggi badan pesenam","Jumlah teknik sulit"],
+    ans:1,
+    explain:"Aspek artistik dinilai dari keselarasan antara gerakan dengan musik, ekspresi wajah/tubuh, keanggunan, dan kualitas gerak secara keseluruhan."
+  },
+  {
+    topic:"Senam Aerobatik",diff:"medium",
+    q:"Latihan kekuatan yang paling relevan untuk meningkatkan kemampuan 'base' dalam senam aerobatik adalah …",
+    opts:["Lari jarak jauh","Squat, deadlift, dan shoulder press","Renang gaya dada","Lompat tali"],
+    ans:1,
+    explain:"Latihan squat (kaki), deadlift (punggung dan kaki), dan shoulder press (bahu) relevan untuk membangun kekuatan fungsional yang dibutuhkan base dalam menopang flyer."
+  },
+  {
+    topic:"Senam Aerobatik",diff:"hard",
+    q:"Apa yang dimaksud dengan 'throw and catch' dalam senam aerobatik?",
+    opts:["Melempar alat senam","Gerakan dinamis di mana base melempar flyer ke udara dan menangkapnya kembali","Teknik jatuh yang aman","Pergantian posisi base dan flyer"],
+    ans:1,
+    explain:"Throw and catch (dynamic element) adalah gerakan di mana base melempar flyer ke udara untuk melakukan rotasi/salto, kemudian menangkapnya kembali dengan aman."
+  },
+
+  /* ── 56-75 KEBUGARAN JASMANI ── */
+  {
+    topic:"Kebugaran Jasmani",diff:"medium",
+    q:"Komponen kebugaran jasmani yang berkaitan dengan kemampuan jantung dan paru-paru mensuplai oksigen ke seluruh tubuh disebut …",
+    opts:["Kekuatan otot","Daya tahan kardiorespirasi","Kelentukan","Komposisi tubuh"],
+    ans:1,
+    explain:"Daya tahan kardiorespirasi (cardiovascular endurance) adalah kemampuan sistem jantung, paru-paru, dan pembuluh darah untuk menyuplai oksigen ke otot selama aktivitas fisik berkelanjutan."
+  },
+  {
+    topic:"Kebugaran Jasmani",diff:"medium",
+    q:"Tes yang umum digunakan untuk mengukur daya tahan kardiorespirasi adalah …",
+    opts:["Sit and reach test","Push-up test","MFT (Multistage Fitness Test/Bleep Test)","Grip strength test"],
+    ans:2,
+    explain:"MFT (Multistage Fitness Test) atau bleep test adalah tes lari bolak-balik yang mengukur kapasitas aerobik maksimal (VO2 max) sebagai indikator daya tahan kardiorespirasi."
+  },
+  {
+    topic:"Kebugaran Jasmani",diff:"medium",
+    q:"Komponen kebugaran jasmani yang mengukur kemampuan sendi bergerak dalam rentang gerak penuh disebut …",
+    opts:["Kekuatan","Kecepatan","Kelentukan (Fleksibilitas)","Keseimbangan"],
+    ans:2,
+    explain:"Kelentukan (fleksibilitas) adalah kemampuan sendi dan otot untuk bergerak dalam rentang gerak (range of motion) yang penuh dan efisien."
+  },
+  {
+    topic:"Kebugaran Jasmani",diff:"medium",
+    q:"Prinsip latihan yang menyatakan bahwa beban latihan harus ditingkatkan secara bertahap disebut prinsip …",
+    opts:["Spesifisitas","Overload progresif","Reversibilitas","Pemulihan"],
+    ans:1,
+    explain:"Prinsip overload progresif menyatakan bahwa untuk mendapatkan peningkatan kebugaran, beban latihan harus ditingkatkan secara bertahap dan teratur melebihi kemampuan saat ini."
+  },
+  {
+    topic:"Kebugaran Jasmani",diff:"medium",
+    q:"Indeks Massa Tubuh (IMT) dihitung dengan rumus …",
+    opts:["Berat badan (kg) ÷ Tinggi badan (m)","Berat badan (kg) ÷ Tinggi badan² (m²)","Tinggi badan (cm) − 100","Berat badan (kg) × Tinggi badan (m)"],
+    ans:1,
+    explain:"IMT = Berat badan (kg) dibagi kuadrat tinggi badan dalam meter [BB(kg)/TB²(m²)]. IMT normal: 18,5–24,9 kg/m²."
+  },
+  {
+    topic:"Kebugaran Jasmani",diff:"medium",
+    q:"Komponen kebugaran jasmani yang berkaitan dengan kemampuan otot menghasilkan gaya maksimum dalam satu kontraksi disebut …",
+    opts:["Daya tahan otot","Kekuatan otot","Kecepatan","Kelincahan"],
+    ans:1,
+    explain:"Kekuatan otot (muscular strength) adalah kemampuan otot untuk menghasilkan gaya/tenaga maksimum dalam satu kali kontraksi atau usaha."
+  },
+  {
+    topic:"Kebugaran Jasmani",diff:"medium",
+    q:"Warm-up (pemanasan) sebelum olahraga bertujuan untuk …",
+    opts:["Meningkatkan massa otot","Meningkatkan suhu otot dan mengurangi risiko cedera","Membakar kalori lebih banyak","Meningkatkan kecepatan reaksi"],
+    ans:1,
+    explain:"Pemanasan bertujuan meningkatkan suhu tubuh dan otot, meningkatkan aliran darah, serta mempersiapkan sendi dan otot untuk aktivitas lebih berat sehingga risiko cedera berkurang."
+  },
+  {
+    topic:"Kebugaran Jasmani",diff:"hard",
+    q:"VO2 max adalah ukuran untuk …",
+    opts:["Kapasitas paru-paru maksimum","Volume oksigen maksimum yang dapat dikonsumsi tubuh saat berolahraga","Tekanan darah maksimum saat istirahat","Kekuatan otot maksimum"],
+    ans:1,
+    explain:"VO2 max (maximal oxygen uptake) adalah jumlah maksimum oksigen (ml/kg/menit) yang dapat dikonsumsi tubuh selama olahraga intens, menjadi indikator kebugaran aerobik terbaik."
+  },
+  {
+    topic:"Kebugaran Jasmani",diff:"medium",
+    q:"Latihan yang paling efektif untuk meningkatkan kelentukan adalah …",
+    opts:["Latihan beban berat","Stretching (peregangan) statis dan dinamis","Lari sprint","Latihan plyometrik"],
+    ans:1,
+    explain:"Stretching statis (menahan posisi 15-30 detik) dan dinamis (gerakan terkontrol) adalah metode paling efektif untuk meningkatkan kelentukan sendi dan otot."
+  },
+  {
+    topic:"Kebugaran Jasmani",diff:"medium",
+    q:"Frekuensi latihan aerobik yang direkomendasikan WHO untuk remaja adalah …",
+    opts:["1 kali seminggu, minimal 30 menit","3-5 kali seminggu, minimal 60 menit per hari","Setiap hari, minimal 15 menit","2 kali seminggu, minimal 45 menit"],
+    ans:1,
+    explain:"WHO merekomendasikan remaja (5-17 tahun) untuk melakukan aktivitas fisik aerobik intensitas sedang-tinggi minimal 60 menit per hari, setidaknya 3-5 hari per minggu."
+  },
+  {
+    topic:"Kebugaran Jasmani",diff:"medium",
+    q:"Komponen kebugaran yang diukur dengan tes sit-and-reach adalah …",
+    opts:["Kekuatan otot","Daya tahan kardio","Kelentukan","Komposisi tubuh"],
+    ans:2,
+    explain:"Tes sit-and-reach mengukur kelentukan otot punggung bawah dan otot hamstring (belakang paha) sebagai komponen kebugaran jasmani."
+  },
+  {
+    topic:"Kebugaran Jasmani",diff:"hard",
+    q:"Prinsip latihan 'FITT' adalah singkatan dari …",
+    opts:["Fast, Intense, Tough, Timed","Frequency, Intensity, Time, Type","Fun, Interesting, Training, Technique","Force, Impact, Tension, Tone"],
+    ans:1,
+    explain:"FITT: Frequency (frekuensi latihan per minggu), Intensity (intensitas/beban latihan), Time (durasi setiap sesi), Type (jenis/mode latihan). Prinsip ini digunakan untuk merancang program latihan yang efektif."
+  },
+  {
+    topic:"Kebugaran Jasmani",diff:"medium",
+    q:"Manfaat utama olahraga teratur terhadap kesehatan jantung adalah …",
+    opts:["Melemahkan denyut jantung saat istirahat","Memperkuat otot jantung dan menurunkan tekanan darah","Meningkatkan kadar kolesterol LDL","Mengurangi volume darah"],
+    ans:1,
+    explain:"Olahraga teratur memperkuat otot jantung (miokardium), meningkatkan stroke volume, serta membantu menurunkan tekanan darah dan kadar kolesterol jahat (LDL)."
+  },
+  {
+    topic:"Kebugaran Jasmani",diff:"medium",
+    q:"Latihan yang melatih kemampuan tubuh untuk bergerak cepat dari satu titik ke titik lain sambil mengubah arah disebut latihan …",
+    opts:["Kekuatan","Keseimbangan","Kelincahan (agility)","Koordinasi"],
+    ans:2,
+    explain:"Kelincahan (agility) adalah kemampuan bergerak dan mengubah arah dengan cepat dan tepat. Contoh latihan: shuttle run, cone drill, T-drill."
+  },
+  {
+    topic:"Kebugaran Jasmani",diff:"medium",
+    q:"Pemulihan (recovery) setelah latihan penting dilakukan karena …",
+    opts:["Mengurangi manfaat latihan","Memungkinkan otot tumbuh dan memperbaiki diri","Mencegah peningkatan kebugaran","Mengurangi konsumsi kalori"],
+    ans:1,
+    explain:"Selama pemulihan, tubuh memperbaiki serat otot yang rusak akibat latihan (proses ini yang menyebabkan otot tumbuh lebih kuat), serta mengisi kembali simpanan glikogen."
+  },
+  {
+    topic:"Kebugaran Jasmani",diff:"hard",
+    q:"Zona latihan jantung (heart rate zone) yang optimal untuk meningkatkan daya tahan aerobik adalah …",
+    opts:["50–60% denyut jantung maksimal","60–75% denyut jantung maksimal","85–95% denyut jantung maksimal","100% denyut jantung maksimal"],
+    ans:1,
+    explain:"Zona aerobik (60–75% HRmax) adalah zona optimal untuk meningkatkan daya tahan kardiorespirasi. Denyut jantung maksimal estimasi = 220 – usia."
+  },
+  {
+    topic:"Kebugaran Jasmani",diff:"medium",
+    q:"Komponen kebugaran jasmani yang berkaitan dengan perbandingan massa lemak dan massa bebas lemak dalam tubuh disebut …",
+    opts:["Kekuatan otot","Fleksibilitas","Komposisi tubuh","Daya tahan otot"],
+    ans:2,
+    explain:"Komposisi tubuh (body composition) adalah perbandingan antara massa lemak (fat mass) dan massa bebas lemak (lean mass: otot, tulang, air) dalam tubuh."
+  },
+  {
+    topic:"Kebugaran Jasmani",diff:"medium",
+    q:"Aktivitas fisik yang termasuk kategori latihan aerobik intensitas sedang adalah …",
+    opts:["Sprint 100 meter","Angkat beban maksimal","Berjalan cepat atau bersepeda santai","Tidur siang"],
+    ans:2,
+    explain:"Latihan aerobik intensitas sedang contohnya jalan cepat, bersepeda santai, berenang gaya bebas pelan, dansa—aktivitas yang bisa dilakukan sambil berbicara tanpa kelelahan berat."
+  },
+  {
+    topic:"Kebugaran Jasmani",diff:"medium",
+    q:"Kondisi di mana tubuh tidak cukup aktif bergerak sehingga meningkatkan risiko penyakit kronis disebut …",
+    opts:["Overtraining","Sedentary lifestyle (gaya hidup kurang gerak)","Dehidrasi","Malnutrisi"],
+    ans:1,
+    explain:"Sedentary lifestyle (gaya hidup kurang gerak/sedentari) adalah kondisi di mana seseorang terlalu banyak duduk/berbaring dan kurang aktivitas fisik, meningkatkan risiko diabetes, jantung, dan obesitas."
+  },
+  {
+    topic:"Kebugaran Jasmani",diff:"medium",
+    q:"Setelah berolahraga berat, penggantian cairan yang paling baik adalah dengan …",
+    opts:["Minuman berenergi tinggi gula","Air putih dan elektrolit (air mineral/oralit olahraga)","Kopi atau teh","Minuman bersoda"],
+    ans:1,
+    explain:"Setelah olahraga berat, tubuh kehilangan air dan elektrolit melalui keringat. Penggantian terbaik adalah air putih dan minuman elektrolit untuk rehidrasi optimal."
+  },
+
+  /* ── 76-100 HIV ── */
+  {
+    topic:"HIV/AIDS",diff:"medium",
+    q:"HIV adalah singkatan dari …",
+    opts:["Human Immunodeficiency Virus","Human Infectious Virus","High Intensity Virus","Human Influenza Virus"],
+    ans:0,
+    explain:"HIV = Human Immunodeficiency Virus, yaitu virus yang menyerang dan melemahkan sistem kekebalan tubuh manusia dengan menginfeksi sel CD4 (sel T-helper)."
+  },
+  {
+    topic:"HIV/AIDS",diff:"medium",
+    q:"AIDS adalah singkatan dari …",
+    opts:["Acute Immune Disease Syndrome","Acquired Immunodeficiency Syndrome","Advanced Infectious Disease Stage","Acute Inflammatory Disease Syndrome"],
+    ans:1,
+    explain:"AIDS = Acquired Immunodeficiency Syndrome, yaitu kondisi lanjut infeksi HIV di mana sistem kekebalan tubuh sudah sangat lemah sehingga tubuh rentan terhadap infeksi oportunistik."
+  },
+  {
+    topic:"HIV/AIDS",diff:"medium",
+    q:"Sel yang paling banyak diserang oleh virus HIV adalah …",
+    opts:["Sel darah merah","Sel CD4 (T-helper lymphocyte)","Sel trombosit","Sel epitel kulit"],
+    ans:1,
+    explain:"HIV secara spesifik menyerang sel CD4+ (T-helper lymphocyte) yang merupakan koordinator utama respons imun tubuh. Semakin rendah jumlah CD4, semakin lemah sistem imun."
+  },
+  {
+    topic:"HIV/AIDS",diff:"medium",
+    q:"Cara penularan HIV yang PALING umum di Indonesia adalah …",
+    opts:["Gigitan nyamuk","Hubungan seksual tidak aman dan penggunaan jarum suntik bersama","Berjabat tangan","Bersin atau batuk"],
+    ans:1,
+    explain:"Di Indonesia, penularan HIV paling banyak melalui hubungan seksual tidak aman (tanpa kondom) dan penggunaan jarum suntik bersama di kalangan pengguna narkoba suntik."
+  },
+  {
+    topic:"HIV/AIDS",diff:"medium",
+    q:"Cairan tubuh yang TIDAK menularkan HIV adalah …",
+    opts:["Darah","Air liur (saliva)","Air mani (semen)","ASI (Air Susu Ibu)"],
+    ans:1,
+    explain:"Air liur/saliva tidak cukup mengandung virus HIV dalam konsentrasi yang dapat menularkan. HIV menular melalui darah, air mani, cairan vagina, dan ASI."
+  },
+  {
+    topic:"HIV/AIDS",diff:"medium",
+    q:"Seseorang yang terinfeksi HIV tetapi belum menunjukkan gejala AIDS disebut …",
+    opts:["Penderita AIDS","ODHA (Orang Dengan HIV/AIDS) dengan HIV positif","Orang sehat","Carrier penyakit menular"],
+    ans:1,
+    explain:"ODHA dengan HIV positif (seropositif) adalah seseorang yang sudah terinfeksi HIV namun sistem imunnya masih cukup baik sehingga belum menunjukkan gejala AIDS secara klinis."
+  },
+  {
+    topic:"HIV/AIDS",diff:"medium",
+    q:"Obat yang digunakan untuk menghambat perkembangan virus HIV disebut …",
+    opts:["Antibiotik","ARV (Antiretroviral)","Antifungal","Vaksin HIV"],
+    ans:1,
+    explain:"ARV (Antiretroviral) adalah obat yang menghambat replikasi virus HIV dalam tubuh. ARV tidak menyembuhkan HIV tetapi dapat menekan jumlah virus (viral load) hingga tidak terdeteksi."
+  },
+  {
+    topic:"HIV/AIDS",diff:"hard",
+    q:"Jumlah sel CD4 yang menandakan seseorang sudah memasuki tahap AIDS adalah …",
+    opts:["Di bawah 500 sel/mm³","Di bawah 200 sel/mm³","Di bawah 1000 sel/mm³","Di bawah 50 sel/mm³"],
+    ans:1,
+    explain:"Seseorang dinyatakan memasuki stadium AIDS jika jumlah sel CD4 turun di bawah 200 sel/mm³ (normal: 500–1500 sel/mm³) atau menderita infeksi/penyakit oportunistik tertentu."
+  },
+  {
+    topic:"HIV/AIDS",diff:"medium",
+    q:"Masa jendela (window period) pada infeksi HIV adalah …",
+    opts:["Periode virus aktif menyerang otak","Periode antara infeksi HIV dan tubuh mulai membentuk antibodi yang dapat terdeteksi tes","Periode seseorang tidak dapat menularkan HIV","Masa inkubasi sebelum masuk stadium AIDS"],
+    ans:1,
+    explain:"Window period (masa jendela) adalah periode setelah infeksi HIV di mana antibodi belum terbentuk cukup untuk terdeteksi dalam tes. Berlangsung 2–12 minggu. Selama periode ini orang sudah bisa menularkan HIV."
+  },
+  {
+    topic:"HIV/AIDS",diff:"medium",
+    q:"Tes HIV yang mendeteksi antibodi terhadap virus HIV dalam darah disebut …",
+    opts:["Tes Elisa/rapid test","Tes PCR (viral load)","MRI scan","Tes darah rutin (CBC)"],
+    ans:0,
+    explain:"Tes ELISA atau rapid test mendeteksi antibodi HIV dalam darah dan merupakan tes skrining HIV yang paling umum. Jika reaktif, dikonfirmasi dengan tes lanjutan (Western Blot atau PCR)."
+  },
+  {
+    topic:"HIV/AIDS",diff:"medium",
+    q:"Ibu hamil dengan HIV yang tidak mendapat pengobatan ARV dapat menularkan HIV kepada bayinya melalui …",
+    opts:["Hanya melalui persalinan","Hanya melalui ASI","Kehamilan, persalinan, dan menyusui (transmisi vertikal)","Hanya melalui plasenta"],
+    ans:2,
+    explain:"Penularan HIV dari ibu ke bayi (transmisi vertikal / mother-to-child transmission) dapat terjadi saat kehamilan (melalui plasenta), persalinan, dan menyusui. ARV dapat mengurangi risiko ini hingga <1%."
+  },
+  {
+    topic:"HIV/AIDS",diff:"medium",
+    q:"Perilaku yang TIDAK meningkatkan risiko penularan HIV adalah …",
+    opts:["Berbagi jarum suntik","Berhubungan seksual tanpa kondom","Berolahraga bersama dan menggunakan peralatan gym bersama","Transfusi darah yang tidak diskrining"],
+    ans:2,
+    explain:"Berolahraga bersama, menggunakan peralatan gym, atau berkeringat bersama tidak menularkan HIV. HIV tidak menular melalui keringat, kontak fisik biasa, atau udara."
+  },
+  {
+    topic:"HIV/AIDS",diff:"medium",
+    q:"Pencegahan HIV yang termasuk dalam strategi ABC adalah …",
+    opts:["Abstain, Be faithful, Condom use","Active, Bold, Careful","Avoid, Believe, Control","Aware, Behave, Caution"],
+    ans:0,
+    explain:"Strategi ABC: Abstain (tidak berhubungan seks), Be faithful (setia pada pasangan), Condom (gunakan kondom). Merupakan strategi pencegahan HIV berbasis perilaku."
+  },
+  {
+    topic:"HIV/AIDS",diff:"hard",
+    q:"PrEP (Pre-Exposure Prophylaxis) adalah …",
+    opts:["Obat untuk menyembuhkan HIV","Obat ARV yang diminum orang BERISIKO TINGGI sebelum terpapar HIV untuk mencegah infeksi","Tes HIV generasi terbaru","Vaksin HIV yang baru ditemukan"],
+    ans:1,
+    explain:"PrEP adalah penggunaan obat ARV (biasanya tenofovir/emtricitabine) oleh orang yang belum terinfeksi namun berisiko tinggi tertular HIV, untuk mencegah infeksi jika terjadi paparan."
+  },
+  {
+    topic:"HIV/AIDS",diff:"medium",
+    q:"Infeksi yang menyerang orang dengan sistem imun yang sangat lemah akibat AIDS disebut …",
+    opts:["Infeksi primer","Infeksi oportunistik","Infeksi nosokomial","Infeksi autoimun"],
+    ans:1,
+    explain:"Infeksi oportunistik adalah infeksi yang memanfaatkan 'kesempatan' dari melemahnya sistem imun (akibat AIDS), seperti tuberkulosis, pneumonia PCP, toksoplasmosis, dan kandidiasis."
+  },
+  {
+    topic:"HIV/AIDS",diff:"medium",
+    q:"Stigma terhadap ODHA (Orang Dengan HIV/AIDS) berbahaya karena …",
+    opts:["Membuat ODHA semakin kuat","Mencegah orang melakukan tes dan pengobatan HIV sehingga penyebaran tidak terkontrol","Membantu mengisolasi virus","Meningkatkan kepedulian masyarakat"],
+    ans:1,
+    explain:"Stigma dan diskriminasi terhadap ODHA menyebabkan orang takut melakukan tes HIV dan mengakses pengobatan. Hal ini membuat orang tidak mengetahui status HIV-nya sehingga penularan terus berlanjut."
+  },
+  {
+    topic:"HIV/AIDS",diff:"medium",
+    q:"Virus HIV termasuk dalam kelompok virus …",
+    opts:["Adenovirus","Retrovirus","Coronavirus","Orthomyxovirus"],
+    ans:1,
+    explain:"HIV adalah retrovirus karena menggunakan enzim reverse transcriptase untuk mengubah RNA-nya menjadi DNA yang kemudian diintegrasikan ke dalam DNA sel inang."
+  },
+  {
+    topic:"HIV/AIDS",diff:"hard",
+    q:"Tanggal yang diperingati sebagai Hari AIDS Sedunia adalah …",
+    opts:["1 Desember","14 Februari","1 April","7 April"],
+    ans:0,
+    explain:"Hari AIDS Sedunia (World AIDS Day) diperingati setiap tanggal 1 Desember sejak tahun 1988. Tujuannya adalah meningkatkan kesadaran global tentang HIV/AIDS."
+  },
+  {
+    topic:"HIV/AIDS",diff:"medium",
+    q:"Seseorang yang menggunakan ARV secara rutin hingga viral load tidak terdeteksi …",
+    opts:["Masih sangat menular seperti biasa","Praktis tidak dapat menularkan HIV kepada orang lain (U=U: Undetectable = Untransmittable)","Sudah sembuh dari HIV","Tidak perlu lagi kontrol ke dokter"],
+    ans:1,
+    explain:"Konsep U=U (Undetectable = Untransmittable): orang dengan HIV yang viral load-nya tidak terdeteksi karena pengobatan ARV secara efektif tidak dapat menularkan virus HIV kepada pasangannya."
+  },
+  {
+    topic:"HIV/AIDS",diff:"medium",
+    q:"Kondom digunakan sebagai alat pencegahan HIV karena …",
+    opts:["Membunuh virus HIV","Mencegah pertukaran cairan tubuh yang mengandung HIV selama hubungan seksual","Meningkatkan sistem imun","Mendeteksi HIV sebelum penularan"],
+    ans:1,
+    explain:"Kondom (lateks) berfungsi sebagai barier fisik yang mencegah pertukaran cairan tubuh (sperma, cairan vagina) yang mengandung virus HIV selama hubungan seksual, dengan efektivitas >90% jika digunakan dengan benar."
+  },
+  {
+    topic:"HIV/AIDS",diff:"hard",
+    q:"Program pemerintah Indonesia yang menyediakan tes dan pengobatan HIV secara gratis di puskesmas dan RSUD adalah …",
+    opts:["Program JKN-KIS (Kartu Indonesia Sehat)","Program VCT (Voluntary Counselling and Testing) dan layanan ARV gratis","Program imunisasi nasional","Program BPJS Ketenagakerjaan"],
+    ans:1,
+    explain:"VCT (Voluntary Counselling and Testing) adalah layanan konseling dan tes HIV sukarela yang tersedia di puskesmas dan rumah sakit. Pemerintah menyediakan ARV gratis bagi ODHA melalui program ini."
+  },
+  {
+    topic:"HIV/AIDS",diff:"medium",
+    q:"Tindakan P3K yang benar jika terkena jarum suntik bekas yang berisiko HIV adalah …",
+    opts:["Mengabaikannya jika luka kecil","Segera cuci dengan air dan sabun, beri antiseptik, dan konsultasi ke dokter untuk evaluasi PEP","Menekan luka sekuat mungkin agar darah keluar","Langsung minum antibiotik"],
+    ans:1,
+    explain:"Jika tertusuk jarum berisiko HIV: segera cuci dengan air mengalir dan sabun, bersihkan dengan antiseptik, laporkan ke dokter dalam 72 jam untuk evaluasi dan kemungkinan pemberian PEP (Post-Exposure Prophylaxis)."
+  },
+  {
+    topic:"HIV/AIDS",diff:"medium",
+    q:"Remaja perlu mendapatkan informasi yang benar tentang HIV karena …",
+    opts:["HIV hanya masalah orang dewasa","Pengetahuan yang benar membantu remaja membuat keputusan sehat dan mencegah penularan","Informasi HIV tidak penting bagi remaja","Remaja kebal terhadap HIV"],
+    ans:1,
+    explain:"Remaja perlu mendapat edukasi HIV yang benar dan komprehensif agar dapat memahami risiko, melindungi diri sendiri, menghindari perilaku berisiko, dan tidak mendiskriminasi ODHA."
+  },
+  {
+    topic:"HIV/AIDS",diff:"medium",
+    q:"Yang BUKAN merupakan gejala awal infeksi HIV (fase akut/primer) adalah …",
+    opts:["Demam","Pembengkakan kelenjar getah bening","Sakit kepala dan lelah","Kerontokan rambut permanen dalam semalam"],
+    ans:3,
+    explain:"Gejala awal HIV (menyerupai flu): demam, sakit kepala, lelah, pembengkakan kelenjar getah bening, ruam, sakit tenggorokan. Kerontokan rambut permanen dalam semalam bukan gejala HIV."
+  },
+  {
+    topic:"HIV/AIDS",diff:"hard",
+    q:"PEP (Post-Exposure Prophylaxis) adalah pengobatan yang harus dimulai dalam …",
+    opts:["24 jam","72 jam setelah paparan berisiko HIV","1 minggu","1 bulan"],
+    ans:1,
+    explain:"PEP harus dimulai sesegera mungkin dan paling lambat 72 jam (3 hari) setelah paparan berisiko HIV. PEP adalah ARV yang dikonsumsi selama 28 hari untuk mencegah infeksi HIV setelah terpapar."
+  }
+];
+
+const letters = ['A','B','C','D'];
+const form = document.getElementById('quiz-form');
+const bar  = document.getElementById('progress-bar');
+const countEl = document.getElementById('progress-count');
+const warn = document.getElementById('warn-msg');
+const hasilDiv = document.getElementById('hasil');
+const submitBtn = document.getElementById('submit-btn');
+
+questions.forEach((item, i) => {
+  const card = document.createElement('div');
+  card.className = 'question-card';
+  card.id = 'card-' + i;
+  const optsHTML = item.opts.map((opt, j) => `
+    <label class="option-label" id="lbl-${i}-${j}">
+      <input type="radio" name="q${i}" value="${j}" />
+      <span class="opt-letter">${letters[j]}</span>
+      <span class="opt-text">${opt}</span>
+    </label>`).join('');
+  const diffLabel = item.diff === 'hard'
+    ? '<span class="q-diff hard">Sulit</span>'
+    : '<span class="q-diff medium">Sedang</span>';
+  card.innerHTML = `
+    <div class="q-meta">
+      <span class="q-num">${String(i+1).padStart(2,'0')}.</span>
+      <span class="q-tag">${item.topic}</span>
+      ${diffLabel}
+    </div>
+    <p class="q-text">${item.q}</p>
+    ${item.note ? '<p class="q-note">'+item.note+'</p>' : ''}
+    <div class="options">${optsHTML}</div>`;
+  form.appendChild(card);
+});
+
+function updateProgress() {
+  let n = 0;
+  questions.forEach((_,i) => { if (document.querySelector('input[name="q'+i+'"]:checked')) n++; });
+  bar.style.width = (n / questions.length * 100) + '%';
+  countEl.textContent = n + ' / ' + questions.length + ' dijawab';
+}
+form.addEventListener('change', updateProgress);
+
+submitBtn.addEventListener('click', () => {
+  const unanswered = [];
+  questions.forEach((_,i) => {
+    const card = document.getElementById('card-'+i);
+    if (!document.querySelector('input[name="q'+i+'"]:checked')) {
+      unanswered.push(i); card.classList.add('unanswered');
+    } else { card.classList.remove('unanswered'); }
+  });
+
+  if (unanswered.length > 0) {
+    warn.style.display = 'block';
+    document.getElementById('card-'+unanswered[0]).scrollIntoView({ behavior:'smooth', block:'center' });
+    return;
+  }
+  warn.style.display = 'none';
+  submitBtn.disabled = true;
+  form.querySelectorAll('input[type="radio"]').forEach(r => r.disabled = true);
+
+  let correct = 0;
+  const details = [];
+  questions.forEach((item, i) => {
+    const sel = parseInt(document.querySelector('input[name="q'+i+'"]:checked').value);
+    const ok = sel === item.ans;
+    if (ok) correct++;
+    for (let j = 0; j < item.opts.length; j++) {
+      const lbl = document.getElementById('lbl-'+i+'-'+j);
+      if (j === item.ans) lbl.classList.add('correct');
+      else if (j === sel && !ok) lbl.classList.add('wrong');
+    }
+    details.push({ q:i+1, topic:item.topic, ans:item.ans, sel, ok,
+      ansText:item.opts[item.ans], selText:item.opts[sel], explain:item.explain });
+  });
+
+  const score = Math.round(correct / questions.length * 100);
+  let pred, col;
+  if (score >= 90)      { pred = '&#127942; Luar Biasa';              col = '#E8A87C'; }
+  else if (score >= 75) { pred = '&#9733; Sangat Baik';               col = '#A8D08D'; }
+  else if (score >= 60) { pred = '&#128218; Baik';                    col = '#F0C040'; }
+  else if (score >= 40) { pred = '&#128214; Cukup — Terus Belajar';   col = '#E09050'; }
+  else                  { pred = '&#128172; Jangan Menyerah!';        col = '#E07878'; }
+
+  const kunciHTML = details.map(d => `
+    <div class="kunci-item ${d.ok?'ok':''}">
+      <div class="ki-no">Soal ${d.q} &mdash; ${d.topic}</div>
+      <div class="ki-ans">&#10003; Benar: ${letters[d.ans]}. ${d.ansText}</div>
+      ${!d.ok ? '<div class="ki-your">&#10007; Jawaban kamu: '+letters[d.sel]+'. '+d.selText+'</div>' : ''}
+      <div class="ki-explain">${d.explain}</div>
+    </div>`).join('');
+
+  hasilDiv.innerHTML = `
+    <div class="score-label">Nilai Kamu</div>
+    <div class="score-num">${score}</div>
+    <div class="score-of">${correct} dari ${questions.length} soal benar</div>
+    <div class="predikat" style="border-color:${col}44;color:${col}">${pred}</div>
+    <div class="divider"></div>
+    <div class="summary-row">
+      <div class="stat"><div class="val g">${correct}</div><div class="lbl">Benar</div></div>
+      <div class="stat"><div class="val r">${questions.length-correct}</div><div class="lbl">Salah</div></div>
+      <div class="stat"><div class="val">${questions.length}</div><div class="lbl">Total</div></div>
+    </div>
+    <div class="kunci-title">Kunci Jawaban &amp; Penjelasan</div>
+    <div class="kunci-grid">${kunciHTML}</div>
+    <button id="retry-btn">&#128260; Coba Lagi</button>`;
+  hasilDiv.style.display = 'block';
+  hasilDiv.scrollIntoView({ behavior:'smooth', block:'start' });
+  document.getElementById('retry-btn').addEventListener('click', () => location.reload());
+});
+</script>
+</body>
+</html>

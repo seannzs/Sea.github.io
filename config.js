@@ -9,8 +9,8 @@ const CONFIG = {
   //  Tambah atau hapus link foto sesukamu
   // ----------------------------------------------------------
   heartImages: [
-    "images/img1.jpg",   // Foto 1
-    "images/img2.jpg",   // Foto 2
+    "https://cdn.discordapp.com/attachments/1513440393562423336/1516637724440789116/file_0000000021f4720b9c0ddbb65f26a368.png?ex=6a335e73&is=6a320cf3&hm=513d08aead656f10cbf43d81781316311f6b93943c91a05f30b61b8d28f3a81a&",   // Foto 1
+    "https://cdn.discordapp.com/attachments/1513440393562423336/1516637724440789116/file_0000000021f4720b9c0ddbb65f26a368.png?ex=6a335e73&is=6a320cf3&hm=513d08aead656f10cbf43d81781316311f6b93943c91a05f30b61b8d28f3a81a&",   // Foto 2
     // "https://i.imgur.com/contoh.jpg",  // Contoh link dari internet
     // "images/img3.jpg",                 // Tambah foto ke-3 jika mau
   ],
